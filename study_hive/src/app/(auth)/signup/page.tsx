@@ -68,7 +68,7 @@ export default function SignupPage() {
       } else {
         toast.error('No response received from server');
       }
-    } catch (error) {
+    } catch {
       toast.error('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
