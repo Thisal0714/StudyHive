@@ -91,7 +91,7 @@ public class SecurityConfig {
                 "http://localhost:3000",   // local dev
                 "https://studyhive-5z2u.onrender.com", // your BE hosted UI
                 "https://study-hive-git-qa-release-fe-thisal-chamodyas-projects.vercel.app", // qa Host
-                "http://study-hive-one.vercel.app" // Production Host
+                "https://study-hive-one.vercel.app" // Production Host
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
