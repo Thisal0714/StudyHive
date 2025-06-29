@@ -4,19 +4,25 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { User } from '@/app/lib/types';
+import userAPI from '@/app/lib/api/user';
 
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+  const [formData, setFormData] = useState<Partial<User>>({
+    name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    city: '',
+    role: '',
+    job: '',
+    nic: '',
+    sex: '',
+    phone: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -28,28 +34,42 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      // Validate passwords match
-      if (formData.password !== formData.confirmPassword) {
-        toast.error('Passwords do not match');
+      // Validate required fields
+      const requiredFields = ['name', 'email', 'password', 'city', 'job', 'nic', 'sex', 'phone'];
+      const missingFields = requiredFields.filter(field => !formData[field as keyof User]);
+      
+      if (missingFields.length > 0) {
+        toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
         return;
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await userAPI.registration(formData as User);
       
-      // For demo purposes, accept any valid data
-      if (formData.firstName && formData.lastName && formData.email && formData.password) {
-        // Set a dummy token
-        document.cookie = 'token=demo-token; path=/; max-age=86400';
-        toast.success('Account created successfully!');
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1000);
+      // Check if response exists and has the expected structure
+      if (response) {
+
+        const isSuccess = response.statusCode === 200 || 
+                         (response.user && response.user.id);
+        
+        if (isSuccess) {
+          document.cookie = 'token=demo-token; path=/; max-age=86400';
+          
+          // Use the message from API response
+          const successMessage ='Account created successfully!';
+          toast.success(successMessage);
+          
+          setTimeout(() => {
+            router.push('/login');
+          }, 1000);
+        } else {
+          const errorMessage ='Registration failed';
+          toast.error(errorMessage);
+        }
       } else {
-        toast.error('Please fill in all fields');
+        toast.error('No response received from server');
       }
-    } catch {
-      toast.error('Signup failed. Please try again.');
+    } catch (error) {
+      toast.error('Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -72,49 +92,30 @@ export default function SignupPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                  First name
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    autoComplete="given-name"
-                    required
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                    placeholder="First name"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                  Last name
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    autoComplete="family-name"
-                    required
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                    placeholder="Last name"
-                  />
-                </div>
+            {/* Name */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Full Name *
+              </label>
+              <div className="mt-1">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  value={formData.name || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="Enter your full name"
+                />
               </div>
             </div>
 
+            {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                Email address *
               </label>
               <div className="mt-1">
                 <input
@@ -123,7 +124,7 @@ export default function SignupPage() {
                   type="email"
                   autoComplete="email"
                   required
-                  value={formData.email}
+                  value={formData.email || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                   placeholder="Enter your email"
@@ -131,9 +132,10 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+                Password *
               </label>
               <div className="mt-1">
                 <input
@@ -142,7 +144,7 @@ export default function SignupPage() {
                   type="password"
                   autoComplete="new-password"
                   required
-                  value={formData.password}
+                  value={formData.password || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                   placeholder="Create a password"
@@ -150,21 +152,125 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {/* City */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm password
+              <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                City *
               </label>
               <div className="mt-1">
                 <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  autoComplete="new-password"
+                  id="city"
+                  name="city"
+                  type="text"
+                  autoComplete="address-level2"
                   required
-                  value={formData.confirmPassword}
+                  value={formData.city || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                  placeholder="Confirm your password"
+                  placeholder="Enter your city"
+                />
+              </div>
+            </div>
+
+            {/* Role */}
+            <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                Role
+              </label>
+              <div className="mt-1">
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                >
+                  <option value="">Select a role</option>
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="researcher">Researcher</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Job */}
+            <div>
+              <label htmlFor="job" className="block text-sm font-medium text-gray-700">
+                Job/Profession *
+              </label>
+              <div className="mt-1">
+                <input
+                  id="job"
+                  name="job"
+                  type="text"
+                  autoComplete="organization-title"
+                  required
+                  value={formData.job || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="Enter your job or profession"
+                />
+              </div>
+            </div>
+
+            {/* NIC */}
+            <div>
+              <label htmlFor="nic" className="block text-sm font-medium text-gray-700">
+                NIC Number *
+              </label>
+              <div className="mt-1">
+                <input
+                  id="nic"
+                  name="nic"
+                  type="text"
+                  required
+                  value={formData.nic || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="Enter your NIC number"
+                />
+              </div>
+            </div>
+
+            {/* Sex */}
+            <div>
+              <label htmlFor="sex" className="block text-sm font-medium text-gray-700">
+                Sex *
+              </label>
+              <div className="mt-1">
+                <select
+                  id="sex"
+                  name="sex"
+                  required
+                  value={formData.sex || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                >
+                  <option value="">Select sex</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Phone Number *
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  required
+                  value={formData.phone || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="Enter your phone number"
                 />
               </div>
             </div>
