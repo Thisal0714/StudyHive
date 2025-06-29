@@ -89,7 +89,8 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",   // local dev
-                "https://studyhive-5z2u.onrender.com" // your hosted UI
+                "https://studyhive-5z2u.onrender.com", // your hosted UI
+                "https://study-hive-git-qa-release-fe-thisal-chamodyas-projects.vercel.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
