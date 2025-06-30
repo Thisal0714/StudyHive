@@ -53,6 +53,16 @@ export interface AuthResponse {
   user: User;
 }
 
+// Backend Login Response Structure
+export interface LoginResponse {
+  statusCode: number;
+  message: string;
+  token: string;
+  role: string;
+  refreshToken: string;
+  expirationTime: string;
+}
+
 // API Response Types
 export interface ApiResponse<T = unknown> {
   statusCode: number;

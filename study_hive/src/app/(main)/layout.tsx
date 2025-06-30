@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -11,15 +11,36 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      if (!document.cookie.includes('token')) {
+        window.location.href = '/login';
+      } else {
+        setIsAuthenticated(true);
+      }
+    }
+  }, []);
+
   const handleLogout = () => {
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    if (typeof document !== 'undefined') {
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    }
     toast.success('Logged out successfully');
     setTimeout(() => {
-      window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     }, 1000);
   };
+
+  if (!isAuthenticated && typeof window !== 'undefined') {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
