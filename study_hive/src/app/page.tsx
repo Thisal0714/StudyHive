@@ -1,7 +1,7 @@
+import { redirect } from 'next/navigation';
+
 const Home = () => {
-  return (
-    <div>Welcome to StudyHive!</div>  
-  );
+  redirect('/login');
 };
 
 export default Home;
