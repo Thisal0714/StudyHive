@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StudyHive",
-  description: "AI Powered Study Notes Hub",
+  title: "StudyHive - AI Powered Study Notes Hub",
+  description: "Your AI-powered study companion. Organize notes, track progress, and master your subjects with intelligent study tools.",
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
