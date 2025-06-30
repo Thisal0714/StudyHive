@@ -1,51 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      if (!document.cookie.includes('token')) {
-        window.location.href = '/login';
-      } else {
-        setIsAuthenticated(true);
-      }
+    if (!document.cookie.includes('token')) {
+      router.push('/login');
+    } else {
+      setIsAuth(true);
     }
-  }, []);
+  }, [router]);
 
-  const handleLogout = () => {
-    if (typeof document !== 'undefined') {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      document.cookie = 'role=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    }
+  const logout = () => {
+    document.cookie = 'token=; Max-Age=0; path=/;';
+    document.cookie = 'refreshToken=; Max-Age=0; path=/;';
+    document.cookie = 'role=; Max-Age=0; path=/;';
     toast.success('Logged out successfully');
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
-    }, 1000);
+    setTimeout(() => router.push('/login'), 1000);
   };
 
-  if (!isAuthenticated && typeof window !== 'undefined') {
-    return null;
-  }
+  if (!isAuth) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Header/Navbar */}
+      <header className="bg-white shadow-sm border-b">
+      <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             <div className="text-2xl font-bold text-black">StudyHive</div>
             <div className="flex items-center space-x-8">
@@ -68,25 +55,23 @@ export default function MainLayout({
                 Reviews
               </Link>
             </div>
-            
             <div className="flex items-center space-x-4">
               {/* Profile Avatar with Dropdown */}
               <div className="relative">
                 <button
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center space-x-2 text-gray-900 hover:text-primary transition-colors focus:outline-none"
                 >
                   <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-lg">
                     U
                   </div>
                 </button>
-
                 {/* Dropdown Menu */}
-                {isProfileDropdownOpen && (
+                {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                     <button
                       onClick={() => {
-                        setIsProfileDropdownOpen(false);
+                        setIsDropdownOpen(false);
                         router.push('/profile');
                       }}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -98,11 +83,10 @@ export default function MainLayout({
                         <span>Profile</span>
                       </div>
                     </button>
-                    
                     <button
                       onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        handleLogout();
+                        setIsDropdownOpen(false);
+                        logout();
                       }}
                       className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
@@ -119,12 +103,10 @@ export default function MainLayout({
             </div>
           </div>
         </div>
-      </nav>
-      
+      </header>
+
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-20 ">
@@ -154,7 +136,6 @@ export default function MainLayout({
                 </a>
               </div>
             </div>
-
             {/* Quick Links */}
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h4>
@@ -181,7 +162,6 @@ export default function MainLayout({
                 </li>
               </ul>
             </div>
-
             {/* Support */}
             <div>
               <h4 className="text-lg font-semibold text-gray-900 mb-4">Support</h4>
@@ -209,7 +189,6 @@ export default function MainLayout({
               </ul>
             </div>
           </div>
-
           {/* Bottom Section */}
           <div className="border-t border-gray-200 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-600 text-sm">
@@ -230,13 +209,13 @@ export default function MainLayout({
         </div>
       </footer>
 
-      {/* Click outside to close dropdown */}
-      {isProfileDropdownOpen && (
+      {/* Overlay to close dropdown */}
+      {isDropdownOpen && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => setIsProfileDropdownOpen(false)}
+          onClick={() => setIsDropdownOpen(false)}
         />
       )}
     </div>
   );
-} 
+}

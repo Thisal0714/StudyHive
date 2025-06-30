@@ -9,7 +9,9 @@
     "lint:check": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.81.5",
     "next": "15.3.4",
+    "pnpm": "^10.12.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sonner": "^2.0.5"
