@@ -3,13 +3,11 @@ import React, { SVGProps } from "react";
 export interface RightArrowIconProps extends SVGProps<SVGSVGElement> {
   width?: string | number;
   height?: string | number;
-  strokeWidth?: string | number;
 }
 
 const RightArrowIcon = ({
   width = 24,
   height = 24,
-  strokeWidth = "2",
   ...props
 }: RightArrowIconProps) => {
   return (
