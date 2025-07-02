@@ -1,4 +1,16 @@
-export default function Dashboard() {
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
+
+export default async function Dashboard() { 
+  const cookieStore = await cookies();       
+  const role = cookieStore.get('role')?.value;
+
+  if (!role || role === 'GUEST') {
+    redirect('/unauthorized');
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">

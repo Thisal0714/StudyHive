@@ -1,0 +1,68 @@
+import React from 'react';
+
+interface BlockUserIconProps {
+  size?: number;
+  width?: number;
+  height?: number;
+  userColor?: string;
+  prohibitionColor?: string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const BlockUserIcon: React.FC<BlockUserIconProps> = ({
+  size = 24,
+  width,
+  height,
+  userColor = "#6B7280",
+  prohibitionColor = "#EF4444",
+  className = "",
+  style = {}
+}) => {
+  const iconWidth = width || size;
+  const iconHeight = height || size;
+
+  return (
+    <svg 
+      width={iconWidth} 
+      height={iconHeight} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={style}
+    >
+      {/* User silhouette */}
+      <circle cx="12" cy="8" r="4" fill={userColor}/>
+      <path 
+        d="M5 20C5 16.6863 8.13401 14 12 14C15.866 14 19 16.6863 19 20" 
+        stroke={userColor} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+      />
+      
+      {/* Prohibition circle */}
+      <circle 
+        cx="12" 
+        cy="12" 
+        r="10" 
+        stroke={prohibitionColor} 
+        strokeWidth="2" 
+        fill="none"
+      />
+      
+      {/* Prohibition line */}
+      <line 
+        x1="4" 
+        y1="4" 
+        x2="20" 
+        y2="20" 
+        stroke={prohibitionColor} 
+        strokeWidth="2" 
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
+export default BlockUserIcon; 
