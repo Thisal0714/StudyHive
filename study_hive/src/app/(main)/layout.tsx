@@ -12,7 +12,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     if (!document.cookie.includes('token')) {
-      router.push('/login');
+      router.push('/unauthorized');
     } else {
       setIsAuth(true);
     }
