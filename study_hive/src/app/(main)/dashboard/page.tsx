@@ -1,43 +1,63 @@
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { RightArrowIcon } from "@/app/util/icons";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default async function Dashboard() { 
-  const cookieStore = await cookies();       
-  const role = cookieStore.get('role')?.value;
+export default async function Dashboard() {
+  const cookieStore = await cookies();
+  const role = cookieStore.get("role")?.value;
+  const isAdmin = role?.toLowerCase() === 'admin';
 
-  if (!role || role === 'GUEST') {
-    redirect('/unauthorized');
+  if (!role || role === "GUEST") {
+    redirect("/unauthorized");
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-        <p className="text-gray-600 mt-2">Welcome to your StudyHive dashboard</p>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900">Welcome User!</h2>
+          <p className="text-gray-600 mt-2">
+            Continue your study journey with StudyHive
+          </p>
+        </div>
+        {isAdmin && (
+          <button className="flex items-center gap-2 bg-danger text-white px-6 py-2 rounded-lg hover:bg-none cursor-pointer font-bold text-lg">
+            Admin Dashboard
+            <RightArrowIcon className="w-6 h-6"/>
+          </button>
+        )}
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Quick Stats */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Total Notes</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Total Notes
+          </h3>
           <p className="text-3xl font-bold text-blue-600">0</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Recent Activity</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Recent Activity
+          </h3>
           <p className="text-3xl font-bold text-green-600">0</p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Study Sessions</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            Study Sessions
+          </h3>
           <p className="text-3xl font-bold text-purple-600">0</p>
         </div>
       </div>
-      
+
       <div className="mt-8">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h3>
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">
+          Quick Actions
+        </h3>
         <div className="flex flex-wrap gap-4">
           <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
             Create New Note

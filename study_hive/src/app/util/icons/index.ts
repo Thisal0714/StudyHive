@@ -1,9 +1,7 @@
 import BlockUserIcon from './BlockUserIcon';
+import RightArrowIcon from './right-arrow';
 
 export {
-  BlockUserIcon
+  BlockUserIcon,
+  RightArrowIcon
 };
-
-export type {
-  BlockUserIconProps
-} from './BlockUserIcon';

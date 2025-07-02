@@ -34,7 +34,6 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      // Validate required fields
       const requiredFields = ['name', 'email', 'password', 'city', 'job', 'nic', 'sex', 'phone'];
       const missingFields = requiredFields.filter(field => !formData[field as keyof User]);
       
@@ -44,8 +43,7 @@ export default function SignupPage() {
       }
 
       const response = await userAPI.registration(formData as User);
-      
-      // Check if response exists and has the expected structure
+
       if (response) {
 
         const isSuccess = response.statusCode === 200 || 
@@ -53,8 +51,7 @@ export default function SignupPage() {
         
         if (isSuccess) {
           document.cookie = 'token=demo-token; path=/; max-age=86400';
-          
-          // Use the message from API response
+ 
           const successMessage ='Account created successfully!';
           toast.success(successMessage);
           
@@ -103,7 +100,6 @@ export default function SignupPage() {
                   name="name"
                   type="text"
                   autoComplete="name"
-                  required
                   value={formData.name || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -123,7 +119,6 @@ export default function SignupPage() {
                   name="email"
                   type="email"
                   autoComplete="email"
-                  required
                   value={formData.email || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -143,7 +138,6 @@ export default function SignupPage() {
                   name="password"
                   type="password"
                   autoComplete="new-password"
-                  required
                   value={formData.password || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -163,7 +157,6 @@ export default function SignupPage() {
                   name="city"
                   type="text"
                   autoComplete="address-level2"
-                  required
                   value={formData.city || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -185,11 +178,10 @@ export default function SignupPage() {
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                 >
-                  <option value="">Select a role</option>
+                  <option value="" disabled>
+                    Select your role
+                  </option>
                   <option value="student">Student</option>
-                  <option value="teacher">Teacher</option>
-                  <option value="researcher">Researcher</option>
-                  <option value="other">Other</option>
                 </select>
               </div>
             </div>
@@ -205,7 +197,6 @@ export default function SignupPage() {
                   name="job"
                   type="text"
                   autoComplete="organization-title"
-                  required
                   value={formData.job || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -224,7 +215,6 @@ export default function SignupPage() {
                   id="nic"
                   name="nic"
                   type="text"
-                  required
                   value={formData.nic || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -242,15 +232,16 @@ export default function SignupPage() {
                 <select
                   id="sex"
                   name="sex"
-                  required
                   value={formData.sex || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                 >
-                  <option value="">Select sex</option>
+                  <option value="" disabled>
+                    Select your sex
+                  </option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="prefer not to say">Prefer not to say</option>
                 </select>
               </div>
             </div>
@@ -266,7 +257,6 @@ export default function SignupPage() {
                   name="phone"
                   type="tel"
                   autoComplete="tel"
-                  required
                   value={formData.phone || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
