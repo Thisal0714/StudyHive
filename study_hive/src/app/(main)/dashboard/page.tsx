@@ -1,23 +1,40 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+import { useEffect, useState } from "react";
+import { getUserProfile } from "@/app/lib/api/user";
+import { useRouter } from "next/navigation";
 import { RightArrowIcon } from "@/app/util/icons";
 
-export const dynamic = "force-dynamic";
+export default function Dashboard() {
+  const [userName, setUserName] = useState("loading...");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const router = useRouter();
 
-export default async function Dashboard() {
-  const cookieStore = await cookies();
-  const role = cookieStore.get("role")?.value;
-  const isAdmin = role?.toLowerCase() === 'admin';
+  useEffect(() => {
+    // Check role from cookies
+    const cookiesArr = document.cookie.split(';');
+    const roleCookie = cookiesArr.find(cookie => cookie.trim().startsWith('role='));
+    const role = roleCookie ? roleCookie.split('=')[1] : null;
+    if (!role || role === "GUEST") {
+      router.replace("/unauthorized");
+      return;
+    }
+    setIsAdmin(role.toLowerCase() === 'admin');
 
-  if (!role || role === "GUEST") {
-    redirect("/unauthorized");
-  }
+    // Fetch user profile directly
+    getUserProfile().then(profileRes => {
+      if (profileRes.user && profileRes.user.name) {
+        setUserName(profileRes.user.name);
+      }
+    }).catch(() => {
+      setUserName("loading...");
+    });
+  }, [router]);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome User!</h2>
+          <h2 className="text-3xl font-bold text-gray-900">Welcome {userName}!</h2>
           <p className="text-gray-600 mt-2">
             Continue your study journey with StudyHive
           </p>
