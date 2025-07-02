@@ -73,7 +73,7 @@ export const userLogin = async (credentials: { email: string; password: string }
 
 // Get user profile API call
 export const getUserProfile = async (): Promise<ApiResponse<User>> => {
-  return apiRequest<User>('/user/profile');
+  return apiRequest<User>('/adminuser/get-profile');
 };
 
 // Update user profile API call
