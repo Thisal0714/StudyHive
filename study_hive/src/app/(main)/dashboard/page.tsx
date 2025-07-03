@@ -3,11 +3,18 @@ import { useEffect, useState } from "react";
 import { getUserProfile } from "@/app/lib/api/user";
 import { useRouter } from "next/navigation";
 import { RightArrowIcon } from "@/app/util/icons";
+import Loading from "@/app/components/common/loading";
 
 export default function Dashboard() {
   const [userName, setUserName] = useState("loading...");
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Check role from cookies
@@ -29,6 +36,10 @@ export default function Dashboard() {
       setUserName("loading...");
     });
   }, [router]);
+
+  if (showLoader) {
+    return <Loading />;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
