@@ -172,7 +172,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-600 hover:text-primary transition-colors">
+                  <a href="/contact" className="text-gray-600 hover:text-primary transition-colors">
                     Contact Us
                   </a>
                 </li>
