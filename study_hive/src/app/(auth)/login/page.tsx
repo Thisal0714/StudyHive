@@ -36,6 +36,7 @@ export default function LoginPage() {
         document.cookie = `token=${response.token}; path=/; max-age=86400`;
         document.cookie = `role=${response.role}; path=/; max-age=86400`;
         document.cookie = `refreshToken=${response.refreshToken}; path=/; max-age=604800`;
+        document.cookie = `email=${email}; path=/; max-age=86400`;
         toast.success('Successfully logged in');
         setTimeout(() => {
           router.push('/dashboard');

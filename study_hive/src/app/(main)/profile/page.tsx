@@ -1,20 +1,69 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import Loading from '@/app/components/common/loading';
+import { getUserProfile } from '@/app/lib/api/user';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-  const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    bio: 'Student passionate about learning and organizing study materials.',
-    university: 'University of Technology',
-    major: 'Computer Science',
-    year: '3rd Year'
-  });
+ 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+  const router = useRouter();
+  const [userName, setUserName] = useState("loading...");
+  const [, setIsAdmin] = useState(false);
+  const [lastName, setLastName] = useState("loading...");
+  const [email, setEmail] = useState("loading...");
+  const [job, setJob] = useState("loading...");
+  const [city, setCity] = useState("loading...");
+  const [nic, setNic] = useState("loading...");
+  const [phone, setPhone] = useState("loading...");
+
+  const [profileData, setProfileData] = useState({
+    firstName: userName,
+    lastName: lastName,
+    email: email,
+    job: job,
+    city: city,
+    nic: nic,
+    phone: phone
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const cookiesArr = document.cookie.split(';');
+    const roleCookie = cookiesArr.find(cookie => cookie.trim().startsWith('role='));
+    const role = roleCookie ? roleCookie.split('=')[1] : null;
+    if (!role || role === "GUEST") {
+      router.replace("/unauthorized");
+      return;
+    }
+    setIsAdmin(role.toLowerCase() === 'admin');
+
+    getUserProfile().then(profileRes => {
+      if (profileRes.user ) {
+        setUserName(profileRes.user.name);
+        setLastName(profileRes.user.lastName);
+        setEmail(profileRes.user.email);
+        setJob(profileRes.user.job);
+        setCity(profileRes.user.city);
+        setNic(profileRes.user.nic);
+        setPhone(profileRes.user.phone);
+      }
+    }).catch(() => {
+      setUserName("loading...");
+    });
+  }, [router]);
+
+  if (showLoader) {
+    return <Loading />;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setProfileData({
@@ -52,13 +101,13 @@ export default function ProfilePage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="text-center">
                 <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-4xl mx-auto mb-4">
-                  {profileData.firstName[0]}{profileData.lastName[0]}
+                  {userName && userName[0]}{lastName && lastName[0]}
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {profileData.firstName} {profileData.lastName}
+                  {userName} {lastName}
                 </h3>
-                <p className="text-gray-600">{profileData.email}</p>
-                <p className="text-sm text-gray-500 mt-1">{profileData.major} • {profileData.year}</p>
+                <p className="text-gray-600">{email}</p>
+                <p className="text-sm text-gray-500 mt-1">{job} • {city}</p>
               </div>
             </div>
           </div>
@@ -85,7 +134,7 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="firstName"
-                      value={profileData.firstName}
+                      value={userName}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -99,7 +148,7 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="lastName"
-                      value={profileData.lastName}
+                      value={lastName}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -114,7 +163,7 @@ export default function ProfilePage() {
                   <input
                     type="email"
                     name="email"
-                    value={profileData.email}
+                    value={email}
                     onChange={handleChange}
                     disabled={!isEditing}
                     className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -123,14 +172,14 @@ export default function ProfilePage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bio
+                    Job
                   </label>
-                  <textarea
-                    name="bio"
-                    value={profileData.bio}
+                  <input
+                    type="text"
+                    name="job"
+                    value={job}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    rows={3}
                     className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
@@ -138,12 +187,12 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      University
+                      NIC
                     </label>
                     <input
                       type="text"
-                      name="university"
-                      value={profileData.university}
+                      name="nic"
+                      value={nic}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -152,12 +201,12 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Major
+                      City
                     </label>
                     <input
                       type="text"
-                      name="major"
-                      value={profileData.major}
+                      name="city"
+                      value={city}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -166,21 +215,17 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Year
+                      Contact Number
                     </label>
-                    <select
-                      name="year"
-                      value={profileData.year}
+                    <input
+                      type="text"
+                      name="phone"
+                      value={phone}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
                     >
-                      <option value="1st Year">1st Year</option>
-                      <option value="2nd Year">2nd Year</option>
-                      <option value="3rd Year">3rd Year</option>
-                      <option value="4th Year">4th Year</option>
-                      <option value="Graduate">Graduate</option>
-                    </select>
+                    </input>
                   </div>
                 </div>
 
