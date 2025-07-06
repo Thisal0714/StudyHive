@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { getUserProfile } from "@/app/lib/api/user";
 import { useRouter } from "next/navigation";
@@ -12,29 +13,33 @@ export default function Dashboard() {
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowLoader(false), 2000);
+    const timer = setTimeout(() => setShowLoader(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     // Check role from cookies
-    const cookiesArr = document.cookie.split(';');
-    const roleCookie = cookiesArr.find(cookie => cookie.trim().startsWith('role='));
-    const role = roleCookie ? roleCookie.split('=')[1] : null;
+    const cookiesArr = document.cookie.split(";");
+    const roleCookie = cookiesArr.find((cookie) =>
+      cookie.trim().startsWith("role=")
+    );
+    const role = roleCookie ? roleCookie.split("=")[1] : null;
     if (!role || role === "GUEST") {
       router.replace("/unauthorized");
       return;
     }
-    setIsAdmin(role.toLowerCase() === 'admin');
+    setIsAdmin(role.toLowerCase() === "admin");
 
     // Fetch user profile directly
-    getUserProfile().then(profileRes => {
-      if (profileRes.user && profileRes.user.name) {
-        setUserName(profileRes.user.name);
-      }
-    }).catch(() => {
-      setUserName("loading...");
-    });
+    getUserProfile()
+      .then((profileRes) => {
+        if (profileRes.user && profileRes.user.name) {
+          setUserName(profileRes.user.name);
+        }
+      })
+      .catch(() => {
+        setUserName("loading...");
+      });
   }, [router]);
 
   if (showLoader) {
@@ -43,23 +48,30 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Top Welcome + Admin Button */}
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Welcome {userName}!</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Welcome, {userName}!
+          </h2>
           <p className="text-gray-600 mt-2">
             Continue your study journey with StudyHive
           </p>
         </div>
+
         {isAdmin && (
-          <button className="flex items-center gap-2 bg-danger text-white px-6 py-2 rounded-lg hover:bg-none cursor-pointer font-bold text-lg">
+          <button
+            onClick={() => router.push("admin_dashboard")}
+            className="flex items-center gap-2 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 cursor-pointer font-bold text-lg"
+          >
             Admin Dashboard
-            <RightArrowIcon className="w-6 h-6"/>
+            <RightArrowIcon className="w-6 h-6" />
           </button>
         )}
       </div>
 
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Quick Stats */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Total Notes
@@ -82,6 +94,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Quick Actions */}
       <div className="mt-8">
         <h3 className="text-xl font-semibold text-gray-800 mb-4">
           Quick Actions
