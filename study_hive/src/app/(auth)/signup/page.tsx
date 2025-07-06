@@ -10,6 +10,7 @@ import userAPI from '@/app/lib/api/user';
 export default function SignupPage() {
   const [formData, setFormData] = useState<Partial<User>>({
     name: '',
+    lastName: '',
     email: '',
     password: '',
     city: '',
@@ -34,7 +35,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const requiredFields = ['name', 'email', 'password', 'city', 'job', 'nic', 'sex', 'phone'];
+      const requiredFields = ['name', 'lastName', 'email', 'password', 'city', 'job', 'nic', 'sex', 'phone'];
       const missingFields = requiredFields.filter(field => !formData[field as keyof User]);
       
       if (missingFields.length > 0) {
@@ -52,21 +53,21 @@ export default function SignupPage() {
         if (isSuccess) {
           document.cookie = 'token=demo-token; path=/; max-age=86400';
  
-          const successMessage ='Account created successfully!';
+          const successMessage =response.message;
           toast.success(successMessage);
           
           setTimeout(() => {
             router.push('/login');
           }, 1000);
         } else {
-          const errorMessage ='Registration failed';
+          const errorMessage =response.message;
           toast.error(errorMessage);
         }
       } else {
         toast.error('No response received from server');
       }
     } catch {
-      toast.error('Registration failed. Please try again.');
+      toast.error('Email already exists. Try with a different email.');
     } finally {
       setIsLoading(false);
     }
@@ -92,7 +93,7 @@ export default function SignupPage() {
             {/* Name */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name *
+                First Name *
               </label>
               <div className="mt-1">
                 <input
@@ -103,7 +104,26 @@ export default function SignupPage() {
                   value={formData.name || ''}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                  placeholder="Enter your full name"
+                  placeholder="Enter your first name"
+                />
+              </div>
+            </div>
+
+            {/* Last Name */}
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                Last Name *
+              </label>
+              <div className="mt-1">
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autoComplete="lastName"
+                  value={formData.lastName || ''}
+                  onChange={handleChange}
+                  className="appearance-none block w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="Enter your last name"
                 />
               </div>
             </div>
