@@ -1,0 +1,35 @@
+name: Build and Deploy Maven Spring Boot App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      MONGO_USER: ${{ secrets.MONGO_USER }}
+      MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      MONGO_CLUSTER: ${{ secrets.MONGO_CLUSTER }}
+      MONGO_DATABASE: ${{ secrets.MONGO_DATABASE }}
+      HF_KEY: ${{ secrets.HF_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build project with Maven
+        run: mvn clean install
+
+      - name: Run tests
+        run: mvn test
