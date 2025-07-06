@@ -19,11 +19,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Check role from cookies
-    const cookiesArr = document.cookie.split(";");
-    const roleCookie = cookiesArr.find((cookie) =>
-      cookie.trim().startsWith("role=")
-    );
-    const role = roleCookie ? roleCookie.split("=")[1] : null;
     const cookiesArr = document.cookie.split(';');
     const roleCookie = cookiesArr.find(cookie => cookie.trim().startsWith('role='));
     const role = roleCookie ? roleCookie.split('=')[1] : null;
