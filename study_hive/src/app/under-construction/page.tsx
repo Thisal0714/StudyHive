@@ -6,7 +6,7 @@ export default function UnderConstructionPage() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="max-w-xl text-center">
         <Image
-          src="/images/building-website.svg"
+          src="/images/building_website.svg"
           alt="Under Construction"
           width={400}
           height={400}

@@ -109,7 +109,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-20 ">
+      <footer className="bg-white border-t border-gray-200 mt-10">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Brand Section */}
