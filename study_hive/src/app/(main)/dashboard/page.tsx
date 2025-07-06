@@ -17,7 +17,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // Check role from cookies
     const cookiesArr = document.cookie.split(';');
     const roleCookie = cookiesArr.find(cookie => cookie.trim().startsWith('role='));
     const role = roleCookie ? roleCookie.split('=')[1] : null;
@@ -27,7 +26,6 @@ export default function Dashboard() {
     }
     setIsAdmin(role.toLowerCase() === 'admin');
 
-    // Fetch user profile directly
     getUserProfile().then(profileRes => {
       if (profileRes.user && profileRes.user.name) {
         setUserName(profileRes.user.name);
@@ -87,13 +85,13 @@ export default function Dashboard() {
           Quick Actions
         </h3>
         <div className="flex flex-wrap gap-4">
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors" onClick={() => router.push("/notes")}>
             Create New Note
           </button>
-          <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+          <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors" onClick={() => router.push("/study-session")}>
             Start Study Session
           </button>
-          <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+          <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors" onClick={() => router.push("/notes")}>
             View All Notes
           </button>
         </div>
