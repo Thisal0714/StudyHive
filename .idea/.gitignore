@@ -20,7 +20,6 @@
 
 # ENV files
 .env
-.env.*  # for .env.local, .env.dev, etc
 
 # Maven
 /mavenHomeManager.xml
