@@ -2,9 +2,9 @@ name: Build and Deploy Maven Spring Boot App
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "backend" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "backend" ]
 
 jobs:
   build:
@@ -27,6 +27,15 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Inject secrets into application.properties
+        run: |
+          echo "" >> src/main/resources/application.properties
+          echo "# Injected from GitHub Secrets" >> src/main/resources/application.properties
+          echo "spring.data.mongodb.database=${MONGO_DATABASE}" >> src/main/resources/application.properties
+          echo "spring.data.mongodb.uri=mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_CLUSTER}" >> src/main/resources/application.properties
+          echo "huggingface.api.key=${HF_KEY}" >> src/main/resources/application.properties
+          echo "openai.api.key=${OPENAI_API_KEY}" >> src/main/resources/application.properties
 
       - name: Build project with Maven
         run: mvn clean install
