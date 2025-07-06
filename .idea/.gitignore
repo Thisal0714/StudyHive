@@ -1,0 +1,26 @@
+# IntelliJ/IDEA
+/.idea/
+/*.iml
+
+# VSCode
+.vscode/
+
+# OS Files
+.DS_Store
+
+# Build
+/target/
+/out/
+
+# Logs
+*.log
+
+# Node modules (if using JS/TS)
+/node_modules/
+
+# ENV files
+.env
+.env.*  # for .env.local, .env.dev, etc
+
+# Maven
+/mavenHomeManager.xml
