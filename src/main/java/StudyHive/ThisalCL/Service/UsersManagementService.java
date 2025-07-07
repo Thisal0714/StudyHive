@@ -175,11 +175,10 @@ public class UsersManagementService {
                 User existingUser = userOptional.get();
                 existingUser.setEmail(updatedUser.getEmail());
                 existingUser.setName(updatedUser.getName());
+                existingUser.setLastName(updatedUser.getLastName());
                 existingUser.setCity(updatedUser.getCity());
                 existingUser.setJob(updatedUser.getJob());
                 existingUser.setPhone(updatedUser.getPhone());
-
-
 
                 // Check if password is present in the request
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
@@ -201,7 +200,6 @@ public class UsersManagementService {
         }
         return reqRes;
     }
-
 
     public ReqRes getMyInfo(String email){
         ReqRes reqRes = new ReqRes();
