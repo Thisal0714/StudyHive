@@ -46,7 +46,7 @@ export default function Notes() {
     };
 
     fetchNotes();
-  }, [router]); // ✅ It's okay to keep `router` — it's stable in App Router
+  }, [router]);  
 
   return (
     <div className="container mx-auto px-4 py-8">
