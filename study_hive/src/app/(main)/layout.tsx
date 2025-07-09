@@ -4,17 +4,34 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { getUserProfile } from '@/app/lib/api/user';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isAuth, setIsAuth] = useState(false);
   const router = useRouter();
+  const [userInitials, setUserInitials] = useState('U');
 
   useEffect(() => {
     if (!document.cookie.includes('token')) {
       router.push('/unauthorized');
     } else {
       setIsAuth(true);
+      // Fetch user profile for initials
+      getUserProfile().then((res) => {
+        const user = res.user || res.data;
+        if (user) {
+          const first = user.name || '';
+          const last = user.lastName || '';
+          if (first && last) {
+            setUserInitials(`${first[0]}${last[0]}`.toUpperCase());
+          } else if (first) {
+            setUserInitials(first[0].toUpperCase());
+          }
+        }
+      }).catch(() => {
+        setUserInitials('U');
+      });
     }
   }, [router]);
 
@@ -63,7 +80,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                   className="flex items-center space-x-2 text-gray-900 hover:text-primary transition-colors focus:outline-none"
                 >
                   <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-lg">
-                    U
+                    {userInitials}
                   </div>
                 </button>
                 {/* Dropdown Menu */}
