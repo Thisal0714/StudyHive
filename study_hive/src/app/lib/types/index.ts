@@ -70,6 +70,7 @@ export interface ApiResponse<T = unknown> {
   message: string;
   user?: T;
   data?: T;
+  ourUsersList?: T;
   success?: boolean;
 }
 
