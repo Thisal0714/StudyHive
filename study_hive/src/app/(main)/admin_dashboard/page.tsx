@@ -54,7 +54,7 @@ export default function AdminDashboard() {
           Welcome, Admin!
         </h2>
         <p className="text-black mb-8">
-          Here's a detailed overview of the system, users and their activities.
+          Here&apos;s a detailed overview of the system, users and their activities.
         </p>
 
         {/* Top Stats */}
