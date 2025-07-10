@@ -29,7 +29,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
         <Toaster 
-          position="bottom-right"
+          position="top-right"
           theme="light"
           className="toaster"
           toastOptions={{

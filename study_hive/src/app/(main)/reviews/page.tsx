@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import Loading from '@/app/components/common/loading';
 
 interface UserReview {
   id: string;
@@ -15,6 +16,7 @@ interface UserReview {
 }
 
 export default function ReviewsPage() {
+  const [showLoader, setShowLoader] = useState(true);
   const [reviews, setReviews] = useState<UserReview[]>([
     {
       id: '1',
@@ -74,6 +76,15 @@ export default function ReviewsPage() {
     content: '',
     rating: 5
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showLoader) {
+    return <Loading />;
+  }
 
   const handleSubmitReview = () => {
     if (!newReview.title.trim() || !newReview.content.trim()) {
