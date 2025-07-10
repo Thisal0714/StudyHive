@@ -115,13 +115,21 @@ export default function Dashboard() {
     <div className="w-full px-10 py-8">
       {/* Top Welcome + Admin Button */}
       <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            Welcome, {userName}!
-          </h2>
-          <p className="text-gray-600 mt-2">
-            Continue your study journey with StudyHive
-          </p>
+        <div className="flex items-center ">
+        <img
+            src="/images/Verified User.gif"
+            alt="Verified User"
+            className="w-40 h-40"
+          />
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Welcome, {userName}!
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Continue your study journey with StudyHive
+            </p>
+          </div>
+          
         </div>
         {isAdmin && (
           <button
@@ -135,7 +143,7 @@ export default function Dashboard() {
       </div>
 
       {/* Decorative background for quote carousel */}
-      <div className="relative my-6 flex flex-col items-center justify-center">
+      <div className="relative my-10 mb-20 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}

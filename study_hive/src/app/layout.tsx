@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <QueryProvider>
             {children}
             <Toaster
-              position="bottom-right"
+              position="top-right"
               theme="light"
               className="toaster"
               toastOptions={{

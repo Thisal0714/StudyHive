@@ -1,4 +1,20 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Loading from "@/app/components/common/loading";
+
 export default function Notes() {
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showLoader) {
+    return <Loading />;
+  }
+
   return (
     <div className="w-full px-10 py-8">
       <div className="mb-8 flex justify-between items-center">

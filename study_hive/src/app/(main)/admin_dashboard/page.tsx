@@ -4,6 +4,7 @@ import { User } from "@/app/lib/types";
 import { getAllUsers } from "@/app/lib/api/user";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import Loader from "@/app/components/common/loading";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
@@ -87,7 +88,9 @@ export default function AdminDashboard() {
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-bold mb-4 text-gray-800">User List</h3>
             {loading ? (
-              <p className="text-gray-500">Loading users...</p>
+              <div className="flex justify-center items-center py-8">
+                <Loader />
+              </div>
             ) : error ? (
               <p className="text-red-500">Error: {error}</p>
             ) : users.length === 0 ? (
@@ -103,7 +106,6 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* Beautiful SVG Image */}
           <div className="bg-white shadow rounded-lg flex items-center justify-center p-6">
             <img
               src="/images/boy-is-shopping-online.svg"
