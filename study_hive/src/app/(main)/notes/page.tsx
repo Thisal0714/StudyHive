@@ -1,6 +1,6 @@
 export default function Notes() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="w-full px-10 py-8">
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Notes</h2>
