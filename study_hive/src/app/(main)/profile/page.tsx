@@ -1,44 +1,173 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import Loading from '@/app/components/common/loading';
+import { getUserProfile, updateUserProfile } from '@/app/lib/api/user';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-  const [profileData, setProfileData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    bio: 'Student passionate about learning and organizing study materials.',
-    university: 'University of Technology',
-    major: 'Computer Science',
-    year: '3rd Year'
-  });
+ 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
+  const router = useRouter();
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("loading...");
+  const [, setIsAdmin] = useState(false);
+  const [lastName, setLastName] = useState("loading...");
+  const [email, setEmail] = useState("loading...");
+  const [job, setJob] = useState("loading...");
+  const [city, setCity] = useState("loading...");
+  const [nic, setNic] = useState("loading...");
+  const [phone, setPhone] = useState("loading...");
+
+  const [profileData, setProfileData] = useState({
+    name: "",
+    lastName: "",
+    email: "",
+    job: "",
+    city: "",
+    nic: "",
+    phone: "",
+    password: ""
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const cookiesArr = document.cookie.split(';');
+    const roleCookie = cookiesArr.find(cookie => cookie.trim().startsWith('role='));
+    const role = roleCookie ? roleCookie.split('=')[1] : null;
+    if (!role || role === "GUEST") {
+      router.replace("/unauthorized");
+      return;
+    }
+    setIsAdmin(role.toLowerCase() === 'admin');
+
+    getUserProfile().then(profileRes => {
+      if (profileRes.user ) {
+        setUserId(profileRes.user.id || "");
+        setUserName(profileRes.user.name);
+        setLastName(profileRes.user.lastName);
+        setEmail(profileRes.user.email);
+        setJob(profileRes.user.job);
+        setCity(profileRes.user.city);
+        setNic(profileRes.user.nic);
+        setPhone(profileRes.user.phone);
+        
+        // Update profileData with the fetched data
+        setProfileData({
+          name: profileRes.user.name,
+          lastName: profileRes.user.lastName,
+          email: profileRes.user.email,
+          job: profileRes.user.job,
+          city: profileRes.user.city,
+          nic: profileRes.user.nic,
+          phone: profileRes.user.phone,
+          password:""
+        });
+      }
+    }).catch(() => {
+      setUserName("loading...");
+    });
+  }, [router]);
+
+  if (showLoader) {
+    return <Loading />;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setProfileData({
       ...profileData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // Also update individual state variables for immediate UI updates
+    switch (name) {
+      case 'name':
+        setUserName(value);
+        break;
+      case 'lastName':
+        setLastName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'job':
+        setJob(value);
+        break;
+      case 'city':
+        setCity(value);
+        break;
+      case 'nic':
+        setNic(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+    }
   };
 
   const handleSave = async () => {
+    if (!userId) {
+      toast.error('User ID not found');
+      return;
+    }
+    
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Profile updated successfully!');
-      setIsEditing(false);
-    } catch {
+      // Create update data without password unless it's being changed
+      const updateData = {
+        name: profileData.name,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        job: profileData.job,
+        city: profileData.city,
+        phone: profileData.phone,
+        password:"",
+        ...(profileData.password && profileData.password.trim() !== '' && { password: profileData.password })
+      };
+      
+      console.log('Sending update data:', updateData); // Debug log
+      
+      const response = await updateUserProfile(userId, updateData);
+      
+      if (response.statusCode === 200) {
+        toast.success('Profile updated successfully!');
+        setIsEditing(false);
+      } else {
+        toast.error(response.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
       toast.error('Failed to update profile');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleCancel = () => {
+    // Reset profileData to original values
+    setProfileData({
+      name: userName,
+      lastName: lastName,
+      email: email,
+      job: job,
+      city: city,
+      nic: nic,
+      phone: phone,
+      password:""
+    });
+    setIsEditing(false);
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="w-full px-10 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -52,13 +181,13 @@ export default function ProfilePage() {
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="text-center">
                 <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-4xl mx-auto mb-4">
-                  {profileData.firstName[0]}{profileData.lastName[0]}
+                  {userName && userName[0]}{lastName && lastName[0]}
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {profileData.firstName} {profileData.lastName}
+                  {userName} {lastName}
                 </h3>
-                <p className="text-gray-600">{profileData.email}</p>
-                <p className="text-sm text-gray-500 mt-1">{profileData.major} • {profileData.year}</p>
+                <p className="text-gray-600">{email}</p>
+                <p className="text-sm text-gray-500 mt-1">{job} • {city}</p>
               </div>
             </div>
           </div>
@@ -69,7 +198,7 @@ export default function ProfilePage() {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
                   className="text-primary hover:text-primary-hover font-medium"
                 >
                   {isEditing ? 'Cancel' : 'Edit'}
@@ -84,8 +213,8 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="text"
-                      name="firstName"
-                      value={profileData.firstName}
+                      name="name"
+                      value={profileData.name}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -116,21 +245,21 @@ export default function ProfilePage() {
                     name="email"
                     value={profileData.email}
                     onChange={handleChange}
-                    disabled={!isEditing}
+                    disabled={true}
                     className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bio
+                    Job
                   </label>
-                  <textarea
-                    name="bio"
-                    value={profileData.bio}
+                  <input
+                    type="text"
+                    name="job"
+                    value={profileData.job}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    rows={3}
                     className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
@@ -138,12 +267,12 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      University
+                      NIC
                     </label>
                     <input
                       type="text"
-                      name="university"
-                      value={profileData.university}
+                      name="nic"
+                      value={profileData.nic}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -152,12 +281,12 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Major
+                      City
                     </label>
                     <input
                       type="text"
-                      name="major"
-                      value={profileData.major}
+                      name="city"
+                      value={profileData.city}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -166,21 +295,16 @@ export default function ProfilePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Year
+                      Contact Number
                     </label>
-                    <select
-                      name="year"
-                      value={profileData.year}
+                    <input
+                      type="text"
+                      name="phone"
+                      value={profileData.phone}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
-                    >
-                      <option value="1st Year">1st Year</option>
-                      <option value="2nd Year">2nd Year</option>
-                      <option value="3rd Year">3rd Year</option>
-                      <option value="4th Year">4th Year</option>
-                      <option value="Graduate">Graduate</option>
-                    </select>
+                    />
                   </div>
                 </div>
 
@@ -188,7 +312,7 @@ export default function ProfilePage() {
                   <div className="flex justify-end space-x-4 pt-6 border-t">
                     <button
                       type="button"
-                      onClick={() => setIsEditing(false)}
+                      onClick={handleCancel}
                       className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       Cancel

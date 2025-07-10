@@ -185,3 +185,114 @@ body {
 .hover\:bg-accent:hover {
   background-color: var(--accent-hover);
 }
+
+/* Custom wave animations */
+@keyframes wave-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes wave-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.animate-wave-pulse {
+  animation: wave-pulse 3s ease-in-out infinite;
+}
+
+.animate-wave-ping {
+  animation: wave-ping 4s ease-in-out infinite;
+}
+
+/* Login Animation Keyframes */
+@keyframes l1 {
+  0% { top: 0%; }
+  10% { top: -20%; }
+  20% { top: 0%; }
+  30% { top: 40%; }
+  40% { top: 0%; }
+  50% { top: 30%; }
+  60% { top: 40%; }
+  70% { top: 60%; }
+  80% { top: -10%; }
+  90% { top: 10%; }
+  100% { top: 0%; }
+}
+
+@keyframes l2 {
+  0% { bottom: 0%; }
+  10% { bottom: -20%; }
+  20% { bottom: 40%; }
+  30% { bottom: 60%; }
+  40% { bottom: 20%; }
+  50% { bottom: 30%; }
+  60% { bottom: 40%; }
+  70% { bottom: 60%; }
+  80% { bottom: -10%; }
+  90% { bottom: 10%; }
+  100% { bottom: 0%; }
+}
+
+@keyframes ball {
+  0% { top: 80%; left: 96%; }
+  10% { top: 10%; left: 3%; }
+  20% { top: 10%; left: 90%; }
+  30% { top: 60%; left: 3%; }
+  40% { top: 10%; left: 90%; }
+  50% { top: 50%; left: 3%; }
+  60% { top: 10%; left: 90%; }
+  70% { top: 93%; left: 3%; }
+  80% { top: 83%; left: 90%; }
+  90% { top: 10%; left: 3%; }
+  100% { top: 80%; left: 90%; }
+}
+
+/* Login Animation Classes */
+.l1 {
+  animation: l1 4s infinite linear;
+}
+
+.l2 {
+  animation: l2 4s infinite linear;
+}
+
+.ball {
+  animation: ball 4s infinite linear;
+}
+
+/* Additional positioning for login animation */
+.loading-box {
+  width: 250px;
+  height: 100px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+}
+
+.WH {
+  width: 10px;
+  height: 70px;
+  position: absolute;
+}
+
+.color {
+  background-color: white;
+}

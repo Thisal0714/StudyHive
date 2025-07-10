@@ -1,13 +1,44 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
+import Loading from "@/app/components/common/loading";
+import Link from "next/link";
 
 export default function ContactPage() {
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showLoader) {
+    return <Loading />;
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b px-10">
+        <div className="w-full px-4">
+          <div className="flex items-center justify-between h-20">
+            <Link href="/login" className="text-2xl font-bold text-black cursor-pointer">
+              StudyHive
+            </Link>
+            <Link
+              href="/login"
+              className="text-gray-900 hover:text-primary px-3 py-2 rounded-md text-lg font-medium transition-colors"
+            >
+              Back to Login
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex min-h-screen flex-col items-center justify-center w-full px-10 py-8">
       <motion.div
         className="flex flex-col md:flex-row w-full bg-blue-100 rounded-lg shadow-lg overflow-hidden"
         initial={{ opacity: 0, y: 40 }}
@@ -28,7 +59,7 @@ export default function ContactPage() {
             </blockquote>
           </div>
           <p className="mb-6 text-gray-800">
-            We’re here to help and answer any questions you might have. We look
+            We&apos;re here to help and answer any questions you might have. We look
             forward to hearing from you!
           </p>
           <div className="space-y-4 text-gray-700">
@@ -92,5 +123,6 @@ export default function ContactPage() {
         </motion.div>
       </motion.div>
     </main>
+    </div>
   );
 }

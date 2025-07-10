@@ -2,6 +2,7 @@
 export interface User {
   id: string;
   name: string;
+  lastName: string;
   password: string;
   email: string;
   city: string;
@@ -69,6 +70,7 @@ export interface ApiResponse<T = unknown> {
   message: string;
   user?: T;
   data?: T;
+  ourUsersList?: T;
   success?: boolean;
 }
 

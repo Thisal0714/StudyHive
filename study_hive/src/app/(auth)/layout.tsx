@@ -4,7 +4,7 @@ import "@/app/styles/globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "StudyHive - Sign In",
+  title: "Welcome to StudyHive",
   description: "Sign in to StudyHive, your AI-powered study companion.",
   icons: {
     icon: '/favicon.ico',
@@ -29,7 +29,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
         <Toaster 
-          position="bottom-right"
+          position="top-right"
           theme="light"
           className="toaster"
           toastOptions={{

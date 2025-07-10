@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import Loading from '@/app/components/common/loading';
 
 interface UserReview {
   id: string;
@@ -15,6 +16,7 @@ interface UserReview {
 }
 
 export default function ReviewsPage() {
+  const [showLoader, setShowLoader] = useState(true);
   const [reviews, setReviews] = useState<UserReview[]>([
     {
       id: '1',
@@ -75,6 +77,15 @@ export default function ReviewsPage() {
     rating: 5
   });
 
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showLoader) {
+    return <Loading />;
+  }
+
   const handleSubmitReview = () => {
     if (!newReview.title.trim() || !newReview.content.trim()) {
       toast.error('Please fill in all fields');
@@ -122,7 +133,7 @@ export default function ReviewsPage() {
   const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="w-full px-10 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Platform Reviews</h1>
         <p className="text-gray-600 mt-2">See what students are saying about StudyHive</p>
@@ -204,7 +215,7 @@ export default function ReviewsPage() {
 
       {/* Review Form Modal */}
       {showReviewForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black/10">
           <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">Write a Review</h3>
             
@@ -236,7 +247,7 @@ export default function ReviewsPage() {
                   type="text"
                   value={newReview.title}
                   onChange={(e) => setNewReview({ ...newReview, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="w-full px-3 py-2 border bg-white text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   placeholder="Brief summary of your experience"
                 />
               </div>
@@ -247,7 +258,7 @@ export default function ReviewsPage() {
                   value={newReview.content}
                   onChange={(e) => setNewReview({ ...newReview, content: e.target.value })}
                   rows={6}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="w-full px-3 py-2 border bg-white text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                   placeholder="Share your experience with StudyHive..."
                 />
               </div>
