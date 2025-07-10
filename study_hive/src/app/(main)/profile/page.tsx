@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Loading from '@/app/components/common/loading';
-import { getUserProfile } from '@/app/lib/api/user';
+import { getUserProfile, updateUserProfile } from '@/app/lib/api/user';
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
@@ -12,6 +12,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const router = useRouter();
+  const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("loading...");
   const [, setIsAdmin] = useState(false);
   const [lastName, setLastName] = useState("loading...");
@@ -22,13 +23,14 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState("loading...");
 
   const [profileData, setProfileData] = useState({
-    firstName: userName,
-    lastName: lastName,
-    email: email,
-    job: job,
-    city: city,
-    nic: nic,
-    phone: phone
+    name: "",
+    lastName: "",
+    email: "",
+    job: "",
+    city: "",
+    nic: "",
+    phone: "",
+    password: ""
   });
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function ProfilePage() {
 
     getUserProfile().then(profileRes => {
       if (profileRes.user ) {
+        setUserId(profileRes.user.id || "");
         setUserName(profileRes.user.name);
         setLastName(profileRes.user.lastName);
         setEmail(profileRes.user.email);
@@ -55,6 +58,18 @@ export default function ProfilePage() {
         setCity(profileRes.user.city);
         setNic(profileRes.user.nic);
         setPhone(profileRes.user.phone);
+        
+        // Update profileData with the fetched data
+        setProfileData({
+          name: profileRes.user.name,
+          lastName: profileRes.user.lastName,
+          email: profileRes.user.email,
+          job: profileRes.user.job,
+          city: profileRes.user.city,
+          nic: profileRes.user.nic,
+          phone: profileRes.user.phone,
+          password:""
+        });
       }
     }).catch(() => {
       setUserName("loading...");
@@ -66,28 +81,93 @@ export default function ProfilePage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setProfileData({
       ...profileData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // Also update individual state variables for immediate UI updates
+    switch (name) {
+      case 'name':
+        setUserName(value);
+        break;
+      case 'lastName':
+        setLastName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'job':
+        setJob(value);
+        break;
+      case 'city':
+        setCity(value);
+        break;
+      case 'nic':
+        setNic(value);
+        break;
+      case 'phone':
+        setPhone(value);
+        break;
+    }
   };
 
   const handleSave = async () => {
+    if (!userId) {
+      toast.error('User ID not found');
+      return;
+    }
+    
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Profile updated successfully!');
-      setIsEditing(false);
-    } catch {
+      // Create update data without password unless it's being changed
+      const updateData = {
+        name: profileData.name,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        job: profileData.job,
+        city: profileData.city,
+        phone: profileData.phone,
+        password:"",
+        ...(profileData.password && profileData.password.trim() !== '' && { password: profileData.password })
+      };
+      
+      console.log('Sending update data:', updateData); // Debug log
+      
+      const response = await updateUserProfile(userId, updateData);
+      
+      if (response.statusCode === 200) {
+        toast.success('Profile updated successfully!');
+        setIsEditing(false);
+      } else {
+        toast.error(response.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
       toast.error('Failed to update profile');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleCancel = () => {
+    // Reset profileData to original values
+    setProfileData({
+      name: userName,
+      lastName: lastName,
+      email: email,
+      job: job,
+      city: city,
+      nic: nic,
+      phone: phone,
+      password:""
+    });
+    setIsEditing(false);
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="w-full px-10 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -118,7 +198,7 @@ export default function ProfilePage() {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
                   className="text-primary hover:text-primary-hover font-medium"
                 >
                   {isEditing ? 'Cancel' : 'Edit'}
@@ -133,8 +213,8 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="text"
-                      name="firstName"
-                      value={userName}
+                      name="name"
+                      value={profileData.name}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -148,7 +228,7 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="lastName"
-                      value={lastName}
+                      value={profileData.lastName}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -163,9 +243,9 @@ export default function ProfilePage() {
                   <input
                     type="email"
                     name="email"
-                    value={email}
+                    value={profileData.email}
                     onChange={handleChange}
-                    disabled={!isEditing}
+                    disabled={true}
                     className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
@@ -177,7 +257,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     name="job"
-                    value={job}
+                    value={profileData.job}
                     onChange={handleChange}
                     disabled={!isEditing}
                     className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -192,7 +272,7 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="nic"
-                      value={nic}
+                      value={profileData.nic}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -206,7 +286,7 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="city"
-                      value={city}
+                      value={profileData.city}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
@@ -220,12 +300,11 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       name="phone"
-                      value={phone}
+                      value={profileData.phone}
                       onChange={handleChange}
                       disabled={!isEditing}
                       className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary disabled:bg-gray-50 disabled:text-gray-500"
-                    >
-                    </input>
+                    />
                   </div>
                 </div>
 
@@ -233,7 +312,7 @@ export default function ProfilePage() {
                   <div className="flex justify-end space-x-4 pt-6 border-t">
                     <button
                       type="button"
-                      onClick={() => setIsEditing(false)}
+                      onClick={handleCancel}
                       className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                     >
                       Cancel

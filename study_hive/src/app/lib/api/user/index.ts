@@ -1,6 +1,5 @@
 import { API_BASE_URL } from '@/app/lib/config';
 import { User, ApiResponse, LoginResponse } from '@/app/lib/types';
- 
 const getAuthToken = (): string | null => {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     return null;
@@ -58,21 +57,32 @@ export const userLogin = async (credentials: { email: string; password: string }
     method: 'POST',
     body: JSON.stringify(credentials),
   });
+  
   return response as unknown as LoginResponse;
 };
 export const getUserProfile = async (): Promise<ApiResponse<User>> => {
   return apiRequest<User>('/adminuser/get-profile');
 };
-export const updateUserProfile = async (userData: Partial<User>): Promise<ApiResponse<User>> => {
-  return apiRequest<User>('/user/profile', {
+
+// Update user profile API call
+export const updateUserProfile = async (userId: string, userData: Partial<User>): Promise<ApiResponse<User>> => {
+  return apiRequest<User>(`/update/${userId}`, {
     method: 'PUT',
     body: JSON.stringify(userData),
   });
 };
+
+// Get all users API call
+export const getAllUsers = async (): Promise<ApiResponse<User[]>> => {
+  return apiRequest<User[]>('/admin/get-all-users');
+};
+
+// Export all user API functions
 export const userAPI = {
   registration: userRegistration,
   login: userLogin,
   getProfile: getUserProfile,
   updateProfile: updateUserProfile,
+  getAllUsers, // Added getAllUsers to the export
 };
 export default userAPI;

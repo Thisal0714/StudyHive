@@ -7,7 +7,7 @@ import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 export default function ContactPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4">
+    <main className="flex min-h-screen flex-col items-center justify-center w-full px-10 py-8">
       <motion.div
         className="flex flex-col md:flex-row w-full bg-blue-100 rounded-lg shadow-lg overflow-hidden"
         initial={{ opacity: 0, y: 40 }}
