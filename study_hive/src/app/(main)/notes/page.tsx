@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/app/lib/config";
+import UploadPage from "@/app/components/common/upload-note";
 
 interface Note {
   filename: string;
@@ -13,6 +14,7 @@ interface Note {
 export default function Notes() {
   const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [showUpload, setShowUpload] = useState(false);
 
   useEffect(() => {
     const cookiesArr = document.cookie.split(";");
@@ -56,7 +58,8 @@ export default function Notes() {
           <p className="text-gray-600 mt-2">Manage your study notes</p>
         </div>
         <div className="bg-primary px-3 py-2 rounded-md text-white font-semibold hover:bg-primary transition-colors cursor-pointer">
-          <button className="cursor-pointer">Upload a PDF</button>
+          <button className="cursor-pointer" onClick={() =>setShowUpload(true)}>Upload a PDF</button>
+          {showUpload && <UploadPage />}
         </div>
       </div>
 
