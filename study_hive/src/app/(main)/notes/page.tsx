@@ -15,13 +15,14 @@ export default function Notes() {
   const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]);
   const [showUpload, setShowUpload] = useState(false);
+  const [summary, setSummary] = useState<string | null>(null);
 
   useEffect(() => {
     const cookiesArr = document.cookie.split(";");
-    const roleCookie = cookiesArr.find(cookie =>
+    const roleCookie = cookiesArr.find((cookie) =>
       cookie.trim().startsWith("role=")
     );
-    const emailCookie = cookiesArr.find(cookie =>
+    const emailCookie = cookiesArr.find((cookie) =>
       cookie.trim().startsWith("email=")
     );
 
@@ -49,6 +50,21 @@ export default function Notes() {
 
     fetchNotes();
   }, [router]);
+
+  const handleSummarize = async (filename: string) => {
+    try {
+      toast.info(`Summarizing ${filename}...`);
+      const res = await fetch(
+        `${API_BASE_URL}/notes/summarise/${filename}`,
+        { method: "GET" }
+      );
+      setSummary(typeof res === "string" ? res : "");
+      if (!res.ok) throw new Error("Failed to summarize");
+      toast.success(`Summary ready for ${filename}!`); 
+    } catch {
+      toast.error(`Failed to summarize ${filename}.`);
+    }
+  };
 
   return (
     <div className="w-full px-10 py-8">
@@ -85,7 +101,10 @@ export default function Notes() {
                       </h6>
                     </div>
                     <div className="w-2/3 flex justify-end items-end gap-2">
-                      <button className="bg-black text-white px-3 py-2 rounded hover:bg-white hover:text-black hover:border border transition-colors">
+                      <button
+                        onClick={() => handleSummarize(note.filename)}
+                        className="bg-black text-white px-3 py-2 rounded hover:bg-white hover:text-black hover:border border transition-colors"
+                      >
                         Summarize
                       </button>
                       <button className="bg-black text-white px-3 py-2 rounded">
@@ -99,6 +118,9 @@ export default function Notes() {
           </div>
           <div className="w-1/3 rounded-md border p-3">
             <h2 className="text-lg text-black font-bold">Summary</h2>
+            <p>
+                {summary}
+            </p>
           </div>
         </div>
       </div>
