@@ -67,10 +67,10 @@ export default function Notes() {
   };
 
   return (
-    <div className="w-full px-10 py-8">
-      <div className="mb-8 flex justify-between items-center">
+    <div className="w-full px-4 py-4 sm:px-10 sm:py-8">
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Notes</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Notes</h2>
           <p className="text-gray-600 mt-2">Manage your study notes</p>
         </div>
         <button
