@@ -167,36 +167,36 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="w-full px-10 py-8">
+    <div className="w-full px-4 py-4 sm:px-10 sm:py-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile</h1>
           <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Profile Picture Section */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
               <div className="text-center">
-                <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-4xl mx-auto mb-4">
+                <div className="w-20 h-20 sm:w-32 sm:h-32 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-semibold text-2xl sm:text-4xl mx-auto mb-4">
                   {userName && userName[0]}{lastName && lastName[0]}
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                   {userName} {lastName}
                 </h3>
                 <p className="text-gray-600">{email}</p>
-                <p className="text-sm text-gray-500 mt-1">{job} • {city}</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">{job} • {city}</p>
               </div>
             </div>
           </div>
 
           {/* Profile Details Section */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
+          <div className="lg:col-span-2 mt-4 lg:mt-0">
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Personal Information</h2>
                 <button
                   onClick={() => isEditing ? handleCancel() : setIsEditing(true)}
                   className="text-primary hover:text-primary-hover font-medium"
@@ -205,8 +205,8 @@ export default function ProfilePage() {
                 </button>
               </div>
 
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       First Name
@@ -264,7 +264,7 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       NIC
@@ -309,7 +309,7 @@ export default function ProfilePage() {
                 </div>
 
                 {isEditing && (
-                  <div className="flex justify-end space-x-4 pt-6 border-t">
+                  <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 pt-4 sm:pt-6 border-t">
                     <button
                       type="button"
                       onClick={handleCancel}

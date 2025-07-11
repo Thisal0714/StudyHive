@@ -133,34 +133,34 @@ export default function ReviewsPage() {
   const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 
   return (
-    <div className="w-full px-10 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Platform Reviews</h1>
+    <div className="w-full px-4 py-4 sm:px-10 sm:py-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Platform Reviews</h1>
         <p className="text-gray-600 mt-2">See what students are saying about StudyHive</p>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Total Reviews</h3>
-          <p className="text-3xl font-bold text-primary">{reviews.length}</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">Total Reviews</h3>
+          <p className="text-2xl sm:text-3xl font-bold text-primary">{reviews.length}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">Average Rating</h3>
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">Average Rating</h3>
           <div className="flex items-center">
             <div className="flex mr-2">{renderStars(Math.round(averageRating))}</div>
-            <p className="text-3xl font-bold text-primary">{averageRating.toFixed(1)}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-primary">{averageRating.toFixed(1)}</p>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">5-Star Reviews</h3>
-          <p className="text-3xl font-bold text-success">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">5-Star Reviews</h3>
+          <p className="text-2xl sm:text-3xl font-bold text-success">
             {reviews.filter(r => r.rating === 5).length}
           </p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-800 mb-2">This Month</h3>
-          <p className="text-3xl font-bold text-info">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">This Month</h3>
+          <p className="text-2xl sm:text-3xl font-bold text-info">
             {reviews.filter(r => {
               const reviewDate = new Date(r.date);
               const now = new Date();
@@ -171,37 +171,37 @@ export default function ReviewsPage() {
       </div>
 
       {/* Add Review Button */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <button
           onClick={() => setShowReviewForm(true)}
-          className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary-hover transition-colors font-medium"
+          className="bg-primary text-primary-foreground px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-primary-hover transition-colors font-medium"
         >
           Write a Review
         </button>
       </div>
 
       {/* Reviews List */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {reviews.map((review) => (
-          <div key={review.id} className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-start justify-between mb-4">
+          <div key={review.id} className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-start justify-between mb-2 sm:mb-4 gap-2 sm:gap-0">
               <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{review.title}</h3>
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{review.title}</h3>
+                <div className="flex flex-wrap items-center space-x-2 sm:space-x-4 text-xs sm:text-sm text-gray-500">
                   <span className="font-medium text-gray-900">{review.userName}</span>
                   <span>{review.userRole}</span>
                   <span>{review.date}</span>
                 </div>
               </div>
-              <div className="flex">{renderStars(review.rating)}</div>
+              <div className="flex mt-2 sm:mt-0">{renderStars(review.rating)}</div>
             </div>
             
-            <p className="text-gray-700 mb-4 leading-relaxed">{review.content}</p>
+            <p className="text-gray-700 mb-2 sm:mb-4 leading-relaxed">{review.content}</p>
             
             <div className="flex items-center justify-between">
               <button
                 onClick={() => markHelpful(review.id)}
-                className="flex items-center space-x-2 text-sm text-gray-500 hover:text-primary transition-colors"
+                className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 hover:text-primary transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
@@ -216,10 +216,10 @@ export default function ReviewsPage() {
       {/* Review Form Modal */}
       {showReviewForm && (
         <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black/10">
-          <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6">Write a Review</h3>
+          <div className="bg-white rounded-lg p-4 sm:p-8 max-w-full sm:max-w-2xl w-full mx-2 sm:mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">Write a Review</h3>
             
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
                 <div className="flex space-x-2">
@@ -264,7 +264,7 @@ export default function ReviewsPage() {
               </div>
             </div>
             
-            <div className="flex space-x-4 mt-8">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-8">
               <button
                 onClick={handleSubmitReview}
                 className="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary-hover transition-colors"
