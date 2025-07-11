@@ -85,13 +85,43 @@ export const getAllUsers = async (): Promise<ApiResponse<User[]>> => {
   return apiRequest<User[]>('/admin/get-all-users');
 };
 
-// Export all user API functions
+// Get session count by email API call
+export const getSessionCountByEmail = async (email: string): Promise<number> => {
+  return apiRequest<number>(`/session/count?email=${encodeURIComponent(email)}`)
+    .then(res => {
+      if (typeof res === 'number') return res;
+      if (res && typeof res.data === 'number') return res.data;
+      // Fallback
+      return 0;
+    });
+};
+
+// Define a specific type for the session submission response
+export interface SubmitSessionResponse {
+  success: boolean;
+  message: string;
+  // Add more fields if your backend returns them
+}
+
+// Submit session API call
+export const submitSession = async (sessionData: { email: string; duration: number; completedAt: string }): Promise<ApiResponse<SubmitSessionResponse>> => {
+  return apiRequest<SubmitSessionResponse>('/session/submit', {
+    method: 'POST',
+    body: JSON.stringify(sessionData),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
 export const userAPI = {
   registration: userRegistration,
   login: userLogin,
   getProfile: getUserProfile,
   updateProfile: updateUserProfile,
-  getAllUsers, // Added getAllUsers to the export
+  getAllUsers, 
+  getSessionCountByEmail, 
+  submitSession,
 };
 
 // Default export
