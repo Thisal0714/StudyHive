@@ -146,8 +146,8 @@ public class NoteController {
         Map<String, Object> requestBody = Map.of(
                 "inputs", trimmedContent,
                 "parameters", Map.of(
-                        "max_length", 300,
-                        "min_length", 100,
+                        "max_length", 1000,
+                        "min_length", 200,
                         "do_sample", false
                 )
         );

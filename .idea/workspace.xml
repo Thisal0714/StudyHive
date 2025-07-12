@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f2f185f6-3c29-4b09-be0a-d054ed18100d" name="Changes" comment="Session count added">
+    <list default="true" id="f2f185f6-3c29-4b09-be0a-d054ed18100d" name="Changes" comment="summarizing model changed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/StudyHive/ThisalCL/Controller/NoteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/StudyHive/ThisalCL/Controller/NoteController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/StudyHive/ThisalCL/Controller/NoteController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/StudyHive/ThisalCL/Controller/NoteController.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752239935823</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="summarizing model changed">
+      <option name="closed" value="true" />
+      <created>1752290245383</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1752290245383</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,6 +166,7 @@
     <MESSAGE value="Checking" />
     <MESSAGE value="LastName added for update" />
     <MESSAGE value="Session count added" />
-    <option name="LAST_COMMIT_MESSAGE" value="Session count added" />
+    <MESSAGE value="summarizing model changed" />
+    <option name="LAST_COMMIT_MESSAGE" value="summarizing model changed" />
   </component>
 </project>
