@@ -16,6 +16,7 @@ export default function Notes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [showUpload, setShowUpload] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
+  const [currentSummaryFile, setCurrentSummaryFile] = useState<string | null>(null);
 
   useEffect(() => {
     const cookiesArr = document.cookie.split(";");
@@ -58,9 +59,14 @@ export default function Notes() {
         `${API_BASE_URL}/notes/summarise/${filename}`,
         { method: "GET" }
       );
-      setSummary(typeof res === "string" ? res : "");
+
       if (!res.ok) throw new Error("Failed to summarize");
-      toast.success(`Summary ready for ${filename}!`); 
+
+      const data = await res.text();  
+      setSummary(data);
+      setCurrentSummaryFile(filename);
+
+      toast.success(`Summary ready for ${filename}!`);
     } catch {
       toast.error(`Failed to summarize ${filename}.`);
     }
@@ -75,7 +81,7 @@ export default function Notes() {
         </div>
         <button
           onClick={() => setShowUpload(true)}
-          className="bg-primary px-4 py-2 rounded-md text-white font-semibold hover:bg-primary-dark transition-colors w-full sm:w-auto mt-4 sm:mt-0"
+          className="bg-primary px-4 py-2 rounded-md text-white font-semibold hover:bg-primary-dark transition-colors"
         >
           Upload a PDF
         </button>
@@ -117,9 +123,15 @@ export default function Notes() {
             </div>
           </div>
           <div className="w-full md:w-1/3 rounded-md border p-3">
-            <h2 className="text-lg text-black font-bold">Summary</h2>
-            <p className="break-words whitespace-pre-line min-h-[40px]">
-                {summary}
+            <h2 className="text-lg text-black font-bold mb-2">Summary</h2>
+            {currentSummaryFile && (
+              <p className="text-sm text-gray-600 mb-2">
+                Summarized from:{" "}
+                <span className="font-bold text-black">{currentSummaryFile}</span>
+              </p>
+            )}
+            <p className="break-words whitespace-pre-line min-h-[40px] font-bold text-gray-800">
+              {summary || "No summary yet. Click 'Summarize' on a note."}
             </p>
           </div>
         </div>
