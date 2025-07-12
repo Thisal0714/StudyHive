@@ -24,19 +24,6 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
       progress: 0,
     }));
     setFiles(prev => [...prev, ...newFiles]);
-
-    // Simulate upload
-    newFiles.forEach(file => {
-      const interval = setInterval(() => {
-        setFiles(prevFiles =>
-          prevFiles.map(f =>
-            f.name === file.name
-              ? { ...f, progress: Math.min(f.progress + 10, 100) }
-              : f
-          )
-        );
-      }, 200);
-    });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
