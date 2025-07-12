@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { API_BASE_URL } from "@/app/lib/config";
 import UploadNote from "@/app/components/common/upload-note";
+import Loader from "@/app/components/common/summary-loading";
 
 interface Note {
   filename: string;
@@ -17,6 +18,7 @@ export default function Notes() {
   const [showUpload, setShowUpload] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [currentSummaryFile, setCurrentSummaryFile] = useState<string | null>(null);
+  const [isSummarizing, setIsSummarizing] = useState(false);
 
   useEffect(() => {
     const cookiesArr = document.cookie.split(";");
@@ -54,6 +56,7 @@ export default function Notes() {
 
   const handleSummarize = async (filename: string) => {
     try {
+      setIsSummarizing(true);
       toast.info(`Summarizing ${filename}...`);
       const res = await fetch(
         `${API_BASE_URL}/notes/summarise/${filename}`,
@@ -69,8 +72,14 @@ export default function Notes() {
       toast.success(`Summary ready for ${filename}!`);
     } catch {
       toast.error(`Failed to summarize ${filename}.`);
+    } finally {
+      setIsSummarizing(false);
     }
   };
+
+  const handleQA = () => {
+    toast.success("Q & A is under development. Will be available soon.");
+  }
 
   return (
     <div className="w-full px-4 py-4 sm:px-10 sm:py-8">
@@ -113,7 +122,9 @@ export default function Notes() {
                       >
                         Summarize
                       </button>
-                      <button className="bg-black text-white px-3 py-2 rounded w-full sm:w-auto hover:bg-white hover:text-black hover:border border transition-colors cursor-pointer">
+                      <button className="bg-black text-white px-3 py-2 rounded w-full sm:w-auto hover:bg-white hover:text-black hover:border border transition-colors cursor-pointer"
+                      onClick={handleQA}
+                      >
                         Q & A
                       </button>
                     </div>
@@ -130,9 +141,16 @@ export default function Notes() {
                 <span className="font-bold text-black">{currentSummaryFile}</span>
               </p>
             )}
-            <p className="break-words whitespace-pre-line min-h-[40px] font-bold text-gray-800">
-              {summary || "No summary yet. Click 'Summarize' on a note."}
-            </p>
+            {isSummarizing ? (
+              <div className="flex flex-col items-center justify-center min-h-[200px]">
+                <Loader />
+                <p className="text-gray-600 text-center">Generating summary...</p>
+              </div>
+            ) : (
+              <p className="break-words whitespace-pre-line min-h-[40px] font-bold text-gray-800">
+                {summary || "No summary yet. Click 'Summarize' on a note."}
+              </p>
+            )}
           </div>
         </div>
       </div>
