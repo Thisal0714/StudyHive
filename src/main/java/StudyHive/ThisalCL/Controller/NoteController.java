@@ -136,7 +136,7 @@ public class NoteController {
 
     private String callHuggingFaceT5(String content) {
         WebClient client = WebClient.builder()
-                .baseUrl("https://api-inference.huggingface.co/models/google/pegasus-xsum")
+                .baseUrl("https://api-inference.huggingface.co/models/facebook/bart-large-cnn")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + huggingFaceAPIKey)
                 .build();
