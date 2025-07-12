@@ -34,19 +34,17 @@ export default function Dashboard() {
   const [audioLoaded, setAudioLoaded] = useState(false);
   const [, setIsSoundLooping] = useState(false);
 
-  // Type definitions for Web Audio API
   interface WindowWithAudio extends Window {
     webkitAudioContext?: typeof AudioContext;
     stopLoopingFallback?: () => void;
   }
 
-  // Function definitions
   const startLoopingFallbackSound = useCallback(() => {
     setIsSoundLooping(true);
     let shouldContinue = true;
     
     const playBeep = () => {
-      if (!shouldContinue) return; // Stop if user closed modal
+      if (!shouldContinue) return; 
       
       try {
         const AudioContextClass = window.AudioContext || (window as WindowWithAudio).webkitAudioContext;
@@ -71,18 +69,16 @@ export default function Dashboard() {
         
         console.log('Fallback beep played');
         
-        // Schedule next beep
         setTimeout(() => {
           if (shouldContinue) {
             playBeep();
           }
-        }, 1000); // 1 second interval
+        }, 1000); 
       } catch {
         toast.error('Looping fallback sound failed:');
       }
     };
     
-    // Store the stop function reference
     (window as WindowWithAudio).stopLoopingFallback = () => {
       shouldContinue = false;
       setIsSoundLooping(false);
@@ -111,14 +107,11 @@ export default function Dashboard() {
       audio.pause();
       audio.currentTime = 0;
     }
-    // Stop fallback sound if it's running
     const stopLoopingFallback = (window as WindowWithAudio).stopLoopingFallback;
     if (stopLoopingFallback) {
       stopLoopingFallback();
     }
   }, [audio]);
-
-  // Quote carousel state
   const quotes = [
     {
       text: "Success is the sum of small efforts, repeated day in and day out.",
@@ -154,7 +147,6 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Initialize audio element
   useEffect(() => {
     const audioElement = new Audio('/audio/timer-complete.wav');
     audioElement.volume = 0.5; 
@@ -178,7 +170,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // Check role from cookies
     const cookiesArr = document.cookie.split(";");
     const roleCookie = cookiesArr.find((cookie) =>
       cookie.trim().startsWith("role=")
@@ -189,8 +180,6 @@ export default function Dashboard() {
       return;
     }
     setIsAdmin(role.toLowerCase() === "admin");
-
-    // Fetch user profile directly
     getUserProfile()
       .then((profileRes) => {
         if (profileRes.user && profileRes.user.name) {
@@ -225,7 +214,6 @@ export default function Dashboard() {
       setShowComplete(true);
 
       startLoopingSound();
-      // Submit session data
       if (initialSessionDuration && userEmail) {
         submitSession({
           email: userEmail,
@@ -302,7 +290,7 @@ export default function Dashboard() {
 
   const playFallbackSound = () => {
     try {
-      // Create a simple beep sound using Web Audio API
+
       const AudioContextClass = window.AudioContext || (window as WindowWithAudio).webkitAudioContext;
       if (!AudioContextClass) {
         throw new Error('AudioContext not supported');
@@ -332,7 +320,6 @@ export default function Dashboard() {
 
   return (
     <div className="w-full px-4 py-4 sm:px-6 md:px-10 md:py-8">
-      {/* Top Welcome + Admin Button */}
       <div className="mb-6 sm:mb-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
         <div className="flex items-center flex-col sm:flex-row gap-4 sm:gap-8">
           <img
@@ -359,8 +346,7 @@ export default function Dashboard() {
           </button>
         )}
       </div>
-
-      {/* Decorative background for quote carousel */}
+ 
       <div className="relative my-6 sm:my-10 mb-10 sm:mb-20 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -422,7 +408,7 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* Stats */}
+ 
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
         initial="hidden"
@@ -486,8 +472,6 @@ export default function Dashboard() {
           </p>
         </motion.div>
       </motion.div>
-
-      {/* Quick Actions */}
       <div className="mt-10 sm:mt-16">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
           Quick Actions
@@ -513,8 +497,6 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
-
-      {/* Study Session Timer Modal */}
       {showTimer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
           <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 flex flex-col items-center shadow-lg relative">
