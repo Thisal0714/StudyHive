@@ -109,11 +109,11 @@ export default function Notes() {
                     <div className="w-full sm:w-2/3 flex flex-col sm:flex-row justify-end items-end gap-2 mt-2 sm:mt-0">
                       <button
                         onClick={() => handleSummarize(note.filename)}
-                        className="bg-black text-white px-3 py-2 rounded hover:bg-white hover:text-black hover:border border transition-colors w-full sm:w-auto"
+                        className="bg-black text-white px-3 py-2 rounded hover:bg-white hover:text-black hover:border border transition-colors w-full sm:w-auto cursor-pointer"
                       >
                         Summarize
                       </button>
-                      <button className="bg-black text-white px-3 py-2 rounded w-full sm:w-auto">
+                      <button className="bg-black text-white px-3 py-2 rounded w-full sm:w-auto hover:bg-white hover:text-black hover:border border transition-colors cursor-pointer">
                         Q & A
                       </button>
                     </div>

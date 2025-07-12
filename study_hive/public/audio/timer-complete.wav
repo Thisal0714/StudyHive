@@ -1,0 +1,9 @@
+# This is a placeholder for the timer completion audio file
+# Please replace this with an actual WAV file for the timer sound
+# 
+# You can create a simple beep sound using online tools like:
+# - https://www.soundjay.com/beep-sounds-1.html
+# - https://www.zapsplat.com/sound-effect-category/beeps/
+# 
+# Or use the built-in fallback sound that will play automatically
+# if no audio file is found. 
