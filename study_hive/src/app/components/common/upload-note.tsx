@@ -10,7 +10,7 @@ interface UploadFile {
   name: string;
   size: number;
   progress: number;
-  rawFile: File; 
+  file: File; // Store the actual File object
 }
 
 interface UploadNoteProps {
@@ -28,9 +28,24 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
       name: file.name,
       size: file.size,
       progress: 0,
-      rawFile: file,
+      file, 
     }));
     setFiles((prev) => [...prev, ...newFiles]);
+
+    newFiles.forEach((file) => {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        setFiles((prevFiles) =>
+          prevFiles.map((f) =>
+            f.name === file.name
+              ? { ...f, progress: Math.min(progress, 100) }
+              : f
+          )
+        );
+        if (progress >= 100) clearInterval(interval);
+      }, 200);
+    });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -41,24 +56,26 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
   const removeFile = (name: string) => {
     setFiles((prev) => prev.filter((file) => file.name !== name));
   };
-function getEmailFromCookies() {
+
+  // Helper to get email from cookies
+  function getEmailFromCookies() {
     const match = document.cookie.match(/email=([^;]+)/);
     return match ? decodeURIComponent(match[1]) : "";
   }
 
-
- const handleUpload = async () => {
+  // Upload handler
+  const handleUpload = async () => {
     if (files.length === 0) return;
 
     const email = getEmailFromCookies();
     if (!email) {
-      toast.error("Email not found in cookies.");
+      alert("Email not found in cookies.");
       return;
     }
 
     for (const file of files) {
       const formData = new FormData();
-      formData.append("file", file.rawFile); 
+      formData.append("file", file.file); // Use the File object
       formData.append("email", email);
 
       try {
@@ -99,15 +116,15 @@ function getEmailFromCookies() {
               {...getRootProps()}
               className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-12 text-center cursor-pointer overflow-hidden transition-colors duration-200 ${
                 isDragActive
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300 bg-gray-50"
+                  ? "border-blue-500 bg-none"
+                  : "border-gray-300 bg-none"
               }`}
             >
               <input {...getInputProps()} className="relative z-10" />
 
               <img
                 src="/images/upload-icon.gif"
-                alt="Upload Animation"
+                alt="Verified User"
                 className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40"
               />
               <p className="text-base text-gray-800 relative z-10">
@@ -118,7 +135,6 @@ function getEmailFromCookies() {
                 select files
               </p>
             </div>
-
             <div className="mt-6 space-y-3 max-h-72 overflow-y-auto">
               {files.map((file) => (
                 <motion.div
@@ -133,6 +149,23 @@ function getEmailFromCookies() {
                     <p className="text-xs text-gray-500">
                       {Math.round(file.size / 1024)} KB
                     </p>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div
+                        className={`h-2 rounded-full ${
+                          file.progress < 100 ? "bg-blue-500" : "bg-green-500"
+                        }`}
+                        style={{ width: `${file.progress}%` }}
+                      ></div>
+                    </div>
+                    {file.progress < 100 ? (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {file.progress}% uploading...
+                      </p>
+                    ) : (
+                      <p className="text-xs text-green-600 mt-1">
+                        Upload complete
+                      </p>
+                    )}
                   </div>
                   <button
                     onClick={() => removeFile(file.name)}
@@ -144,7 +177,6 @@ function getEmailFromCookies() {
                 </motion.div>
               ))}
             </div>
-
             <div className="mt-6 flex justify-end gap-4">
               <button
                 className="text-blue-600 border px-4 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500"
@@ -156,7 +188,7 @@ function getEmailFromCookies() {
                 className="bg-blue-500 border cursor-pointer text-white px-5 py-2 rounded-md hover:bg-white hover:text-blue-500 hover:border-blue-500 transition"
                 onClick={handleUpload}
               >
-                Upload
+                Add files
               </button>
             </div>
           </div>
@@ -165,3 +197,4 @@ function getEmailFromCookies() {
     </AnimatePresence>
   );
 }
+
