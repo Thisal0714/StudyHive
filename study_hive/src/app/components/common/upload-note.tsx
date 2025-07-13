@@ -18,7 +18,9 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
   const [files, setFiles] = useState<UploadFile[]>([]);
 
   const onDrop = (acceptedFiles: File[]) => {
-    const pdfFiles = acceptedFiles.filter((file) => file.type === "application/pdf");
+    const pdfFiles = acceptedFiles.filter(
+      (file) => file.type === "application/pdf"
+    );
     const newFiles = pdfFiles.map((file) => ({
       name: file.name,
       size: file.size,
@@ -66,15 +68,7 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
           transition={{ duration: 0.25 }}
           className="bg-white rounded-xl p-10 max-w-2xl w-full relative shadow-2xl overflow-hidden"
         >
-          
           <div className="relative z-10">
-            <button
-              className="absolute top-4 right-5 text-3xl text-gray-500 hover:text-gray-800"
-              onClick={onClose}
-            >
-              &times;
-            </button>
-
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black">
               Upload PDF files
             </h2>
@@ -88,17 +82,17 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
             >
               <input {...getInputProps()} className="relative z-10" />
 
-
               <img
-            src="/images/upload-icon.gif"
-            alt="Verified User"
-            className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40"
-          />
+                src="/images/upload-icon.gif"
+                alt="Verified User"
+                className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40"
+              />
               <p className="text-base text-gray-800 relative z-10">
                 Drag & drop your PDF files here
               </p>
               <p className="text-sm text-gray-600 mt-1 relative z-10">
-                or <span className="text-blue-600 underline">browse</span> to select files
+                or <span className="text-blue-600 underline">browse</span> to
+                select files
               </p>
             </div>
             <div className="mt-6 space-y-3 max-h-72 overflow-y-auto">
@@ -135,25 +129,24 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
                   </div>
                   <button
                     onClick={() => removeFile(file.name)}
-                    className="text-gray-500 hover:text-red-600 text-lg"
+                    className="text-gray-500 hover:text-red-600 text-4xl mx-2"
                     title="Remove"
                   >
-                    🗑️
+                    &times;
                   </button>
                 </motion.div>
               ))}
             </div>
             <div className="mt-6 flex justify-end gap-4">
               <button
-                className="text-blue-600 hover:underline"
+                className="text-blue-600 border px-4 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500"
                 onClick={onClose}
               >
                 Cancel
               </button>
               <button
-                className="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700 transition"
+                className="bg-blue-500 border cursor-pointer text-white px-5 py-2 rounded-md hover:bg-white hover:text-blue-500 hover:border-blue-500 transition"
                 onClick={() => {
-                  console.log("Files submitted:", files);
                   onClose();
                 }}
               >
