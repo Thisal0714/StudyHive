@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getUserProfile,
   getSessionCountByEmail,
@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { RightArrowIcon } from "@/app/util/icons";
 import Loading from "@/app/components/common/loading";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const [userName, setUserName] = useState("loading...");
@@ -29,7 +30,88 @@ export default function Dashboard() {
   const [initialSessionDuration, setInitialSessionDuration] = useState<
     number | null
   >(null);
-  // Quote carousel state
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [audioLoaded, setAudioLoaded] = useState(false);
+  const [, setIsSoundLooping] = useState(false);
+
+  interface WindowWithAudio extends Window {
+    webkitAudioContext?: typeof AudioContext;
+    stopLoopingFallback?: () => void;
+  }
+
+  const startLoopingFallbackSound = useCallback(() => {
+    setIsSoundLooping(true);
+    let shouldContinue = true;
+    
+    const playBeep = () => {
+      if (!shouldContinue) return; 
+      
+      try {
+        const AudioContextClass = window.AudioContext || (window as WindowWithAudio).webkitAudioContext;
+        if (!AudioContextClass) {
+          throw new Error('AudioContext not supported');
+        }
+        const audioContext = new (AudioContextClass as typeof AudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+        
+        console.log('Fallback beep played');
+        
+        setTimeout(() => {
+          if (shouldContinue) {
+            playBeep();
+          }
+        }, 1000); 
+      } catch {
+        toast.error('Looping fallback sound failed:');
+      }
+    };
+    
+    (window as WindowWithAudio).stopLoopingFallback = () => {
+      shouldContinue = false;
+      setIsSoundLooping(false);
+    };
+    
+    playBeep();
+  }, []);
+
+  const startLoopingSound = useCallback(() => {
+    if (audio && audioLoaded) {
+      audio.currentTime = 0;
+      audio.play().then(() => {
+        setIsSoundLooping(true);
+      }).catch(() => {
+        toast.error('Audio playback failed:');
+        startLoopingFallbackSound();
+      });
+    } else {
+      startLoopingFallbackSound();
+    }
+  }, [audio, audioLoaded, startLoopingFallbackSound]);
+
+  const stopLoopingSound = useCallback(() => {
+    setIsSoundLooping(false);
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+    const stopLoopingFallback = (window as WindowWithAudio).stopLoopingFallback;
+    if (stopLoopingFallback) {
+      stopLoopingFallback();
+    }
+  }, [audio]);
   const quotes = [
     {
       text: "Success is the sum of small efforts, repeated day in and day out.",
@@ -66,7 +148,28 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // Check role from cookies
+    const audioElement = new Audio('/audio/timer-complete.wav');
+    audioElement.volume = 0.5; 
+    audioElement.loop = true; 
+    
+    audioElement.addEventListener('canplaythrough', () => {
+      setAudioLoaded(true);
+    });
+    
+    audioElement.addEventListener('error', (e) => {
+      console.error('Audio loading failed:', e);
+      setAudioLoaded(false);
+    });
+    
+    setAudio(audioElement);
+    
+    return () => {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+    };
+  }, []);
+
+  useEffect(() => {
     const cookiesArr = document.cookie.split(";");
     const roleCookie = cookiesArr.find((cookie) =>
       cookie.trim().startsWith("role=")
@@ -77,8 +180,6 @@ export default function Dashboard() {
       return;
     }
     setIsAdmin(role.toLowerCase() === "admin");
-
-    // Fetch user profile directly
     getUserProfile()
       .then((profileRes) => {
         if (profileRes.user && profileRes.user.name) {
@@ -111,7 +212,8 @@ export default function Dashboard() {
     } else if (timer === 0 && isRunning) {
       setIsRunning(false);
       setShowComplete(true);
-      // Optionally play a sound here
+
+      startLoopingSound();
       if (initialSessionDuration && userEmail) {
         submitSession({
           email: userEmail,
@@ -123,7 +225,7 @@ export default function Dashboard() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, timer, initialSessionDuration, userEmail]);
+  }, [isRunning, timer, initialSessionDuration, userEmail, startLoopingSound]);
 
   useEffect(() => {
     if (userEmail) {
@@ -163,6 +265,7 @@ export default function Dashboard() {
   }
 
   const handleClose = () => {
+    stopLoopingSound(); 
     setShowTimer(false);
     setIsRunning(false);
     setTimer(0);
@@ -171,9 +274,52 @@ export default function Dashboard() {
     window.location.reload();
   };
 
+  const testSound = async () => {
+    if (audio && audioLoaded) {
+      try {
+        audio.currentTime = 0;
+        await audio.play();
+      } catch {
+        toast.error('Audio playback failed:');
+        playFallbackSound();
+      }
+    } else {
+      playFallbackSound();
+    }
+  };
+
+  const playFallbackSound = () => {
+    try {
+
+      const AudioContextClass = window.AudioContext || (window as WindowWithAudio).webkitAudioContext;
+      if (!AudioContextClass) {
+        throw new Error('AudioContext not supported');
+      }
+      const audioContext = new (AudioContextClass as typeof AudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
+      
+    } catch {
+      toast.error('Fallback sound failed:');
+    }
+  };
+
+
+
   return (
     <div className="w-full px-4 py-4 sm:px-6 md:px-10 md:py-8">
-      {/* Top Welcome + Admin Button */}
       <div className="mb-6 sm:mb-8 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
         <div className="flex items-center flex-col sm:flex-row gap-4 sm:gap-8">
           <img
@@ -200,8 +346,7 @@ export default function Dashboard() {
           </button>
         )}
       </div>
-
-      {/* Decorative background for quote carousel */}
+ 
       <div className="relative my-6 sm:my-10 mb-10 sm:mb-20 flex flex-col items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -263,7 +408,7 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      {/* Stats */}
+ 
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
         initial="hidden"
@@ -307,7 +452,7 @@ export default function Dashboard() {
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Recent Activity
           </h3>
-          <p className="text-2xl sm:text-3xl font-bold text-green-600">
+          <p className="text-2xl sm:text-3xl font-bold text-blue-600">
             {sessionCount !== null ? sessionCount : 0}
           </p>
         </motion.div>
@@ -322,13 +467,11 @@ export default function Dashboard() {
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
             Study Sessions
           </h3>
-          <p className="text-2xl sm:text-3xl font-bold text-purple-600">
+          <p className="text-2xl sm:text-3xl font-bold text-blue-600">
             {sessionCount !== null ? sessionCount : 0}
           </p>
         </motion.div>
       </motion.div>
-
-      {/* Quick Actions */}
       <div className="mt-10 sm:mt-16">
         <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">
           Quick Actions
@@ -341,21 +484,19 @@ export default function Dashboard() {
             Create New Note
           </button>
           <button
-            className="bg-green-600 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-green-700 transition-colors"
+            className="bg-blue-600 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-blue-700 transition-colors"
             onClick={() => setShowTimer(true)}
           >
             Start Study Session
           </button>
           <button
-            className="bg-purple-600 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-purple-700 transition-colors"
+            className="bg-blue-600 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-blue-700 transition-colors"
             onClick={() => router.push("/notes")}
           >
             View All Notes
           </button>
         </div>
       </div>
-
-      {/* Study Session Timer Modal */}
       {showTimer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/10">
           <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 flex flex-col items-center shadow-lg relative">
@@ -368,6 +509,14 @@ export default function Dashboard() {
             <h2 className="text-2xl font-bold mb-4 text-black">
               Study Session Timer
             </h2>
+            <div className="mb-4 flex items-center gap-2">
+              <button
+                onClick={testSound}
+                className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 transition-colors"
+              >
+                🔊 Test Sound
+              </button>
+            </div>
             {!isTimeSet ? (
               <>
                 <div className="mb-6 flex gap-2 items-center">
@@ -417,8 +566,8 @@ export default function Dashboard() {
                   {formatTime(timer)}
                 </div>
                 {showComplete && (
-                  <div className="mb-4 text-green-600 font-bold text-lg">
-                    Time &apos;s up! 🎉
+                  <div className="mb-4 text-green-600 font-bold text-lg flex items-center gap-2">
+                    <span>Time &apos;s up! 🎉</span>
                   </div>
                 )}
                 <div className="flex gap-4">

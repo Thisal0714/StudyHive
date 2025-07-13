@@ -168,12 +168,11 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full px-4 py-4 sm:px-10 sm:py-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile</h1>
-          <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
-        </div>
+      {/* Header */}
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile</h1>
+        <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
+      </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Profile Picture Section */}
@@ -331,7 +330,6 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
