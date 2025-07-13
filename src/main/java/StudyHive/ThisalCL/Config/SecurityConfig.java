@@ -57,7 +57,8 @@ public class SecurityConfig {
                                 "notes/get-note-by-email/**",
                                 "/notes/summarise/**",
                                 "/notes/answer-question/**",
-                                "/session/**"
+                                "/session/**",
+                                "/api/reviews/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/user/**").hasAuthority("USER")
