@@ -45,7 +45,6 @@ const apiRequest = async <T>(
   }
 };
 
-// User registration API call
 export const userRegistration = async (userData: User): Promise<ApiResponse<User>> => {
     return apiRequest<User>('/auth/register', {
       method: 'POST',
@@ -57,7 +56,6 @@ export const userRegistration = async (userData: User): Promise<ApiResponse<User
     });
   };
   
-// User login API call
 export const userLogin = async (credentials: { email: string; password: string }): Promise<LoginResponse> => {
   const response = await apiRequest<LoginResponse>('/auth/login', {
     method: 'POST',
@@ -67,12 +65,10 @@ export const userLogin = async (credentials: { email: string; password: string }
   return response as unknown as LoginResponse;
 };
 
-// Get user profile API call
 export const getUserProfile = async (): Promise<ApiResponse<User>> => {
   return apiRequest<User>('/adminuser/get-profile');
 };
 
-// Update user profile API call
 export const updateUserProfile = async (userId: string, userData: Partial<User>): Promise<ApiResponse<User>> => {
   return apiRequest<User>(`/update/${userId}`, {
     method: 'PUT',
@@ -80,30 +76,23 @@ export const updateUserProfile = async (userId: string, userData: Partial<User>)
   });
 };
 
-// Get all users API call
+
 export const getAllUsers = async (): Promise<ApiResponse<User[]>> => {
   return apiRequest<User[]>('/admin/get-all-users');
 };
 
-// Get session count by email API call
 export const getSessionCountByEmail = async (email: string): Promise<number> => {
   return apiRequest<number>(`/session/count?email=${encodeURIComponent(email)}`)
     .then(res => {
       if (typeof res === 'number') return res;
       if (res && typeof res.data === 'number') return res.data;
-      // Fallback
       return 0;
     });
 };
-
-// Define a specific type for the session submission response
 export interface SubmitSessionResponse {
   success: boolean;
   message: string;
-  // Add more fields if your backend returns them
 }
-
-// Submit session API call
 export const submitSession = async (sessionData: { email: string; duration: number; completedAt: string }): Promise<ApiResponse<SubmitSessionResponse>> => {
   return apiRequest<SubmitSessionResponse>('/session/submit', {
     method: 'POST',
@@ -124,5 +113,4 @@ export const userAPI = {
   submitSession,
 };
 
-// Default export
 export default userAPI;

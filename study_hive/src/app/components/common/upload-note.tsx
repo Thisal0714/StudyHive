@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { AnimatePresence, motion } from "framer-motion";
+import { API_BASE_URL } from "@/app/lib/config";
+import { toast } from "sonner";
 
 interface UploadFile {
   name: string;
   size: number;
   progress: number;
+  rawFile: File; 
 }
 
 interface UploadNoteProps {
@@ -25,23 +28,9 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
       name: file.name,
       size: file.size,
       progress: 0,
+      rawFile: file,
     }));
     setFiles((prev) => [...prev, ...newFiles]);
-
-    newFiles.forEach((file) => {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        setFiles((prevFiles) =>
-          prevFiles.map((f) =>
-            f.name === file.name
-              ? { ...f, progress: Math.min(progress, 100) }
-              : f
-          )
-        );
-        if (progress >= 100) clearInterval(interval);
-      }, 200);
-    });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -51,6 +40,40 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
 
   const removeFile = (name: string) => {
     setFiles((prev) => prev.filter((file) => file.name !== name));
+  };
+function getEmailFromCookies() {
+    const match = document.cookie.match(/email=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : "";
+  }
+
+
+ const handleUpload = async () => {
+    if (files.length === 0) return;
+
+    const email = getEmailFromCookies();
+    if (!email) {
+      toast.error("Email not found in cookies.");
+      return;
+    }
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file.rawFile); 
+      formData.append("email", email);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/notes/file-upload`, {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        toast.success("Uploaded Successfully.");
+        window.location.reload();
+      } catch {
+        toast.error("Upload failed for " + file.name);
+      }
+    }
+    onClose();
   };
 
   return (
@@ -76,15 +99,15 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
               {...getRootProps()}
               className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-12 text-center cursor-pointer overflow-hidden transition-colors duration-200 ${
                 isDragActive
-                  ? "border-blue-500 bg-none"
-                  : "border-gray-300 bg-none"
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-300 bg-gray-50"
               }`}
             >
               <input {...getInputProps()} className="relative z-10" />
 
               <img
                 src="/images/upload-icon.gif"
-                alt="Verified User"
+                alt="Upload Animation"
                 className="w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40"
               />
               <p className="text-base text-gray-800 relative z-10">
@@ -95,6 +118,7 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
                 select files
               </p>
             </div>
+
             <div className="mt-6 space-y-3 max-h-72 overflow-y-auto">
               {files.map((file) => (
                 <motion.div
@@ -109,23 +133,6 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
                     <p className="text-xs text-gray-500">
                       {Math.round(file.size / 1024)} KB
                     </p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          file.progress < 100 ? "bg-blue-500" : "bg-green-500"
-                        }`}
-                        style={{ width: `${file.progress}%` }}
-                      ></div>
-                    </div>
-                    {file.progress < 100 ? (
-                      <p className="text-xs text-gray-500 mt-1">
-                        {file.progress}% uploading...
-                      </p>
-                    ) : (
-                      <p className="text-xs text-green-600 mt-1">
-                        Upload complete
-                      </p>
-                    )}
                   </div>
                   <button
                     onClick={() => removeFile(file.name)}
@@ -137,6 +144,7 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
                 </motion.div>
               ))}
             </div>
+
             <div className="mt-6 flex justify-end gap-4">
               <button
                 className="text-blue-600 border px-4 rounded-md cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500"
@@ -146,11 +154,9 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
               </button>
               <button
                 className="bg-blue-500 border cursor-pointer text-white px-5 py-2 rounded-md hover:bg-white hover:text-blue-500 hover:border-blue-500 transition"
-                onClick={() => {
-                  onClose();
-                }}
+                onClick={handleUpload}
               >
-                Add files
+                Upload
               </button>
             </div>
           </div>
