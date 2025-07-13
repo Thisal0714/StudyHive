@@ -17,7 +17,9 @@ export default function Notes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [showUpload, setShowUpload] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
-  const [currentSummaryFile, setCurrentSummaryFile] = useState<string | null>(null);
+  const [currentSummaryFile, setCurrentSummaryFile] = useState<string | null>(
+    null
+  );
   const [isSummarizing, setIsSummarizing] = useState(false);
 
   useEffect(() => {
@@ -58,14 +60,13 @@ export default function Notes() {
     try {
       setIsSummarizing(true);
       toast.info(`Summarizing ${filename}...`);
-      const res = await fetch(
-        `${API_BASE_URL}/notes/summarise/${filename}`,
-        { method: "GET" }
-      );
+      const res = await fetch(`${API_BASE_URL}/notes/summarise/${filename}`, {
+        method: "GET",
+      });
 
       if (!res.ok) throw new Error("Failed to summarize");
 
-      const data = await res.text();  
+      const data = await res.text();
       setSummary(data);
       setCurrentSummaryFile(filename);
 
@@ -79,18 +80,20 @@ export default function Notes() {
 
   const handleQA = () => {
     toast.success("Q & A is under development. Will be available soon.");
-  }
+  };
 
   return (
     <div className="w-full px-4 py-4 sm:px-10 sm:py-8">
       <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Notes</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Notes
+          </h2>
           <p className="text-gray-600 mt-2">Manage your study notes</p>
         </div>
         <button
           onClick={() => setShowUpload(true)}
-          className="bg-primary px-4 py-2 rounded-md text-white font-semibold hover:bg-primary-dark transition-colors"
+          className="bg-primary px-4 py-2 rounded-md text-white font-semibold hover:bg-primary-dark transition-colors cursor-pointer"
         >
           Upload a PDF
         </button>
@@ -122,8 +125,9 @@ export default function Notes() {
                       >
                         Summarize
                       </button>
-                      <button className="bg-black text-white px-3 py-2 rounded w-full sm:w-auto hover:bg-white hover:text-black hover:border border transition-colors cursor-pointer"
-                      onClick={handleQA}
+                      <button
+                        className="bg-black text-white px-3 py-2 rounded w-full sm:w-auto hover:bg-white hover:text-black hover:border border transition-colors cursor-pointer"
+                        onClick={handleQA}
                       >
                         Q & A
                       </button>
@@ -136,15 +140,22 @@ export default function Notes() {
           <div className="w-full md:w-1/3 rounded-md border p-3">
             <h2 className="text-lg text-black font-bold mb-2">Summary</h2>
             {currentSummaryFile && (
-              <p className="text-sm text-gray-600 mb-2">
-                Summarized from:{" "}
-                <span className="font-bold text-black">{currentSummaryFile}</span>
-              </p>
+              <div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Summarized from:{" "}
+                  <span className="font-bold text-black">
+                    {currentSummaryFile}
+                  </span>
+                </p>
+                <p className="mb-3 text-red-500">Note: Please be aware that the summary is not 100% accurate.</p>
+              </div>
             )}
             {isSummarizing ? (
               <div className="flex flex-col items-center justify-center min-h-[200px]">
                 <Loader />
-                <p className="text-gray-600 text-center">Generating summary...</p>
+                <p className="text-gray-600 text-center">
+                  Generating summary...
+                </p>
               </div>
             ) : (
               <p className="break-words whitespace-pre-line min-h-[40px] font-bold text-gray-800">
