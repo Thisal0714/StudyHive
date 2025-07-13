@@ -316,7 +316,7 @@ export default function MainLayout({
           </div>
           {/* Bottom Section */}
           <div className="border-t border-gray-200 mt-8 pt-4 flex flex-col md:flex-row items-start md:items-center justify-between">
-            <p className="text-gray-600 text-sm">© 2024 StudyHive. All rights reserved.</p>
+            <p className="text-gray-600 text-sm">© 2025 StudyHive. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="text-gray-600 hover:text-primary text-sm transition-colors">Privacy</a>
               <a href="#" className="text-gray-600 hover:text-primary text-sm transition-colors">Terms</a>
