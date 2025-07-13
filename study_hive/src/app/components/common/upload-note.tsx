@@ -3,11 +3,14 @@
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { AnimatePresence, motion } from "framer-motion";
+import { API_BASE_URL } from "@/app/lib/config";
+import { toast } from "sonner";
 
 interface UploadFile {
   name: string;
   size: number;
   progress: number;
+  file: File; // Store the actual File object
 }
 
 interface UploadNoteProps {
@@ -25,6 +28,7 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
       name: file.name,
       size: file.size,
       progress: 0,
+      file, 
     }));
     setFiles((prev) => [...prev, ...newFiles]);
 
@@ -51,6 +55,42 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
 
   const removeFile = (name: string) => {
     setFiles((prev) => prev.filter((file) => file.name !== name));
+  };
+
+  // Helper to get email from cookies
+  function getEmailFromCookies() {
+    const match = document.cookie.match(/email=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : "";
+  }
+
+  // Upload handler
+  const handleUpload = async () => {
+    if (files.length === 0) return;
+
+    const email = getEmailFromCookies();
+    if (!email) {
+      alert("Email not found in cookies.");
+      return;
+    }
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file.file); // Use the File object
+      formData.append("email", email);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/notes/file-upload`, {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        toast.success("Uploaded Successfully.");
+        window.location.reload();
+      } catch {
+        toast.error("Upload failed for " + file.name);
+      }
+    }
+    onClose();
   };
 
   return (
@@ -146,9 +186,7 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
               </button>
               <button
                 className="bg-blue-500 border cursor-pointer text-white px-5 py-2 rounded-md hover:bg-white hover:text-blue-500 hover:border-blue-500 transition"
-                onClick={() => {
-                  onClose();
-                }}
+                onClick={handleUpload}
               >
                 Add files
               </button>
@@ -159,3 +197,4 @@ export default function UploadNote({ onClose }: UploadNoteProps) {
     </AnimatePresence>
   );
 }
+
