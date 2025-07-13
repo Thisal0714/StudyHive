@@ -20,11 +20,6 @@ export default function UnderConstructionPage() {
           <p className="text-gray-600 mb-8">
             We&apos;re working hard to bring you this page. It&apos;ll be live shortly—thank you for your patience!</p>
         </div>
-        <Link href="/">
-          <button className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition cursor-pointer">
-            Back to Home
-          </button>
-        </Link>
       </div>
     </main>
   );
