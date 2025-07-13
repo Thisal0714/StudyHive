@@ -202,15 +202,12 @@ export default function LoginPage() {
               </div>
 
               <div className="mt-6 bg-gray-50 p-4 rounded-md">
-                <p className="text-sm text-gray-600 mb-2">
-                  For demo purposes, use any email and password:
-                </p>
                 <div className="text-xs text-gray-500 space-y-1">
                   <p>
-                    <strong>Email:</strong> demo@studyhive.com
+                    <strong>Email:</strong> testuser@studyhive.com
                   </p>
                   <p>
-                    <strong>Password:</strong> any password
+                    <strong>Password:</strong> test
                   </p>
                 </div>
               </div>
