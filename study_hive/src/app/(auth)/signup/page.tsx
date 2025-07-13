@@ -24,9 +24,10 @@ export default function SignupPage() {
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: name === 'role' && value === 'student' ? 'USER' : value
     });
   };
 
