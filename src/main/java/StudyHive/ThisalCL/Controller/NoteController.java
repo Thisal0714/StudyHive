@@ -196,7 +196,7 @@ public class NoteController {
         System.out.println("📘 Summarizing with input length: " + text.length());
 
         WebClient client = WebClient.builder()
-                .baseUrl("https://api-inference.huggingface.co/models/facebook/bart-large-cnn")
+                .baseUrl("https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + huggingFaceAPIKey)
                 .build();
